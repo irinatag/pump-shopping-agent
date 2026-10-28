@@ -17,6 +17,15 @@ describe("checkEligibility", () => {
     expect(check("evergreen-ppo", "cradle-supply", "nestlark-free").status).toBe("upgrade");
   });
 
+  it("applies a supplier-specific override for one plan + supplier + pump", () => {
+    expect(check("evergreen-ppo", "bloom-maternity", "nestlark-classic").status).toBe("fully-covered");
+    expect(check("evergreen-ppo", "mama-mend", "nestlark-classic").status).toBe("upgrade");
+  });
+
+  it("does not apply an override to a different plan", () => {
+    expect(check("bayview-medicaid", "mama-mend", "nestlark-classic").status).toBe("fully-covered");
+  });
+
   it("rejects out-of-network suppliers", () => {
     expect(check("evergreen-ppo", "willow-lane", "lunaria-duo-plus")).toEqual({
       status: "not-covered",
@@ -35,14 +44,6 @@ describe("checkEligibility", () => {
       status: "not-covered",
       reasons: ["upgrade-not-allowed"],
     });
-  });
-
-  it("uses the supplier-adjusted price, not retail, against the allowance", () => {
-    // Nestlark Classic retails at $229 (under Bayview's $240), but MamaMend's +5% makes it $240.45.
-    expect(check("bayview-medicaid", "bloom-maternity", "nestlark-classic").status).toBe("fully-covered");
-    expect(check("bayview-medicaid", "mama-mend", "nestlark-classic").reasons).toEqual([
-      "upgrade-not-allowed",
-    ]);
   });
 
   it("reports every applicable reason", () => {

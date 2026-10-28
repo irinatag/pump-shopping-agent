@@ -3,31 +3,39 @@ import type { DemoScenario, ScenarioId } from "@/lib/types";
 export const scenarios: DemoScenario[] = [
   {
     id: "A",
-    title: "Fully covered",
-    summary: "PPO member who wants a standard double-electric pump at no cost.",
+    title: "Multiple free options",
+    summary: "PPO member looking for a double-electric pump; several suppliers offer one at $0.",
     planId: "evergreen-ppo",
-    preferences: { pumpTypes: ["double-electric"], maxOutOfPocketCents: 0 },
+    preferences: { pumpTypes: ["double-electric"] },
   },
   {
     id: "B",
-    title: "Wearable upgrade",
-    summary: "PPO member who wants a wearable pump and will pay an upgrade fee.",
+    title: "Same pump, different price",
+    summary:
+      "The same Nestlark Classic under the same PPO is $0 at Bloom Maternity but $75 at MamaMend.",
     planId: "evergreen-ppo",
-    preferences: { pumpTypes: ["wearable"], maxOutOfPocketCents: 15000 },
-  },
-  {
-    id: "E",
-    title: "Narrow HMO network",
-    summary: "HMO member with only two in-network suppliers, one partly out of stock.",
-    planId: "harbor-hmo",
-    preferences: { pumpTypes: ["double-electric"], maxOutOfPocketCents: 5000 },
+    preferences: { pumpTypes: ["double-electric"] },
+    priceComparison: {
+      pumpId: "nestlark-classic",
+      freeSupplierId: "bloom-maternity",
+      upgradeSupplierId: "mama-mend",
+      upgradeOutOfPocketCents: 7500,
+    },
   },
   {
     id: "H",
-    title: "Preferred type not covered",
-    summary: "Medicaid member who wants a wearable, which the plan does not cover and cannot be upgraded to.",
-    planId: "bayview-medicaid",
-    preferences: { pumpTypes: ["wearable"], maxOutOfPocketCents: 0 },
+    title: "Order submission timeout",
+    summary:
+      "Member picks a $0 pump, but the supplier's order submission times out; the order must be reconciled, not retried blindly.",
+    planId: "summit-epo",
+    preferences: { pumpTypes: ["double-electric"] },
+    checkout: {
+      supplierId: "coastal-care",
+      pumpId: "lunaria-duo",
+      submissionOutcome: "timeout",
+      expectedOrderStatus: "pending-reconciliation",
+      idempotencyKeyRequired: true,
+    },
   },
 ];
 

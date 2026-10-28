@@ -13,8 +13,6 @@ export const suppliers: Supplier[] = [
     offerings: offerings(["lunaria-duo", "lunaria-duo-plus", "nestlark-free", "kestrel-pocket"]),
     shippingDays: 3,
     rating: 4.7,
-    priceAdjustmentPct: 0,
-    upgradeHandlingFeeCents: 0,
   },
   {
     id: "milkway-medical",
@@ -26,8 +24,6 @@ export const suppliers: Supplier[] = [
     ),
     shippingDays: 2,
     rating: 4.5,
-    priceAdjustmentPct: 2,
-    upgradeHandlingFeeCents: 1500,
   },
   {
     id: "harborside-dme",
@@ -36,8 +32,6 @@ export const suppliers: Supplier[] = [
     offerings: offerings(["lunaria-duo", "nestlark-classic", "kestrel-pocket", "orchard-clinical"]),
     shippingDays: 4,
     rating: 4.2,
-    priceAdjustmentPct: 0,
-    upgradeHandlingFeeCents: 0,
   },
   {
     id: "little-latch",
@@ -46,8 +40,6 @@ export const suppliers: Supplier[] = [
     offerings: offerings(["kestrel-glide", "nestlark-free", "willowmere-pro", "lunaria-mini"]),
     shippingDays: 2,
     rating: 4.8,
-    priceAdjustmentPct: -3,
-    upgradeHandlingFeeCents: 0,
   },
   {
     id: "bloom-maternity",
@@ -56,8 +48,6 @@ export const suppliers: Supplier[] = [
     offerings: offerings(["lunaria-duo", "nestlark-classic", "lunaria-mini", "kestrel-pocket"]),
     shippingDays: 5,
     rating: 4.1,
-    priceAdjustmentPct: 0,
-    upgradeHandlingFeeCents: 0,
   },
   {
     id: "northstar-health",
@@ -66,8 +56,6 @@ export const suppliers: Supplier[] = [
     offerings: offerings(["lunaria-duo-plus", "willowmere-pro", "orchard-clinical"]),
     shippingDays: 3,
     rating: 4.4,
-    priceAdjustmentPct: 1,
-    upgradeHandlingFeeCents: 1000,
   },
   {
     id: "mama-mend",
@@ -79,8 +67,6 @@ export const suppliers: Supplier[] = [
     ),
     shippingDays: 4,
     rating: 4.3,
-    priceAdjustmentPct: 5,
-    upgradeHandlingFeeCents: 2500,
   },
   {
     id: "anchor-medical",
@@ -92,8 +78,6 @@ export const suppliers: Supplier[] = [
     ),
     shippingDays: 6,
     rating: 3.9,
-    priceAdjustmentPct: 3,
-    upgradeHandlingFeeCents: 2000,
   },
   {
     id: "nurture-dme",
@@ -102,8 +86,6 @@ export const suppliers: Supplier[] = [
     offerings: offerings(["nestlark-classic", "nestlark-free", "kestrel-glide", "lunaria-mini"]),
     shippingDays: 3,
     rating: 4.6,
-    priceAdjustmentPct: -2,
-    upgradeHandlingFeeCents: 0,
   },
   {
     id: "first-feed",
@@ -112,8 +94,6 @@ export const suppliers: Supplier[] = [
     offerings: offerings(["lunaria-duo", "kestrel-glide", "kestrel-pocket", "lunaria-mini"]),
     shippingDays: 2,
     rating: 4.0,
-    priceAdjustmentPct: 0,
-    upgradeHandlingFeeCents: 0,
   },
   {
     id: "willow-lane",
@@ -122,8 +102,6 @@ export const suppliers: Supplier[] = [
     offerings: offerings(["willowmere-pro", "nestlark-free", "lunaria-duo-plus"]),
     shippingDays: 1,
     rating: 4.9,
-    priceAdjustmentPct: -5,
-    upgradeHandlingFeeCents: 0,
   },
   {
     id: "coastal-care",
@@ -132,7 +110,5 @@ export const suppliers: Supplier[] = [
     offerings: offerings(["lunaria-duo", "nestlark-classic", "kestrel-glide", "orchard-clinical"]),
     shippingDays: 5,
     rating: 4.2,
-    priceAdjustmentPct: 0,
-    upgradeHandlingFeeCents: 500,
   },
 ];

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getPlan, getPump, getSupplier, plans, pumps, suppliers } from "@/lib/catalog";
+import { coverageOverrides } from "@/lib/data/coverage-overrides";
 
 const unique = (ids: string[]) => new Set(ids).size === ids.length;
 
@@ -25,7 +26,7 @@ describe("catalog data integrity", () => {
     const amounts = [
       ...pumps.map((p) => p.retailPriceCents),
       ...plans.map((p) => p.allowanceCents),
-      ...suppliers.map((s) => s.upgradeHandlingFeeCents),
+      ...coverageOverrides.map((o) => o.outOfPocketCents),
     ];
     for (const cents of amounts) {
       expect(Number.isInteger(cents)).toBe(true);
@@ -33,12 +34,22 @@ describe("catalog data integrity", () => {
     }
   });
 
-  it("keeps supplier ratings and adjustments in range", () => {
+  it("keeps supplier ratings in range", () => {
     for (const s of suppliers) {
       expect(s.rating).toBeGreaterThanOrEqual(1);
       expect(s.rating).toBeLessThanOrEqual(5);
-      expect(Number.isInteger(s.priceAdjustmentPct)).toBe(true);
-      expect(Math.abs(s.priceAdjustmentPct)).toBeLessThanOrEqual(10);
+    }
+  });
+
+  it("only overrides offers that exist, are in network, and cost no more than list price", () => {
+    const keys = coverageOverrides.map((o) => `${o.planId}/${o.supplierId}/${o.pumpId}`);
+    expect(unique(keys)).toBe(true);
+
+    for (const o of coverageOverrides) {
+      const supplier = getSupplier(o.supplierId);
+      expect(supplier.inNetworkPlanIds).toContain(getPlan(o.planId).id);
+      expect(supplier.offerings.map((x) => x.pumpId)).toContain(o.pumpId);
+      expect(o.outOfPocketCents).toBeLessThanOrEqual(getPump(o.pumpId).retailPriceCents);
     }
   });
 

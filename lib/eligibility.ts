@@ -1,4 +1,4 @@
-import { supplierPriceCents } from "@/lib/pricing";
+import { coveredMemberCostCents } from "@/lib/pricing";
 import type { EligibilityResult, IneligibilityReason, InsurancePlan, Pump, Supplier } from "@/lib/types";
 
 /**
@@ -11,7 +11,7 @@ export function checkEligibility(plan: InsurancePlan, supplier: Supplier, pump: 
   if (!supplier.inNetworkPlanIds.includes(plan.id)) reasons.push("out-of-network");
   if (!plan.coveredPumpTypes.includes(pump.type)) reasons.push("pump-type-not-covered");
 
-  const needsUpgrade = supplierPriceCents(supplier, pump) > plan.allowanceCents;
+  const needsUpgrade = coveredMemberCostCents(plan, supplier, pump) > 0;
   if (needsUpgrade && !plan.upgradesAllowed) reasons.push("upgrade-not-allowed");
 
   if (reasons.length > 0) return { status: "not-covered", reasons };

@@ -1,77 +1,97 @@
 import { describe, expect, it } from "vitest";
-import { getPump } from "@/lib/catalog";
-import { quotesForPlan } from "@/lib/quotes";
+import { getPlan, getPump, getSupplier } from "@/lib/catalog";
+import { findFreeOffers, quoteOffer, rankQuotes } from "@/lib/quotes";
 import { getScenario, scenarios } from "@/lib/scenarios";
-import type { ScenarioId } from "@/lib/types";
-
-function scenarioQuotes(id: ScenarioId) {
-  const { planId, preferences } = getScenario(id);
-  const quotes = quotesForPlan(planId);
-  const isPreferred = (pumpId: string) => preferences.pumpTypes.includes(getPump(pumpId).type);
-  return {
-    all: quotes,
-    preferred: quotes.filter((q) => isPreferred(q.pumpId)),
-  };
-}
 
 describe("demo scenarios", () => {
-  it("defines exactly A, B, E and H", () => {
-    expect(scenarios.map((s) => s.id)).toEqual(["A", "B", "E", "H"]);
+  it("defines exactly A, B and H", () => {
+    expect(scenarios.map((s) => s.id)).toEqual(["A", "B", "H"]);
   });
 
-  it("A: several in-stock double-electric pumps are fully covered", () => {
-    const covered = scenarioQuotes("A").preferred.filter(
-      (q) => q.status === "fully-covered" && q.inStock,
-    );
-    expect(covered).toHaveLength(9);
-    expect(covered.every((q) => q.outOfPocketCents === 0)).toBe(true);
+  it.each(scenarios.map((s) => [s.id, s] as const))(
+    "%s: has at least one eligible, in-stock $0 offer",
+    (_id, scenario) => {
+      const result = findFreeOffers(scenario.planId, scenario.preferences);
+      expect(result.outcome).toBe("free_offers_found");
+    },
+  );
+});
+
+describe("Scenario A: multiple free options", () => {
+  it("returns multiple $0 in-stock offers from several suppliers", () => {
+    const { planId, preferences } = getScenario("A");
+    const result = findFreeOffers(planId, preferences);
+    if (result.outcome !== "free_offers_found") throw new Error(result.outcome);
+
+    expect(result.offers).toHaveLength(8);
+    expect(new Set(result.offers.map((q) => q.supplierId)).size).toBe(6);
+    for (const q of result.offers) {
+      expect(q).toMatchObject({ status: "fully-covered", inStock: true, outOfPocketCents: 0 });
+    }
+  });
+});
+
+describe("Scenario B: same pump, different price", () => {
+  const scenario = getScenario("B");
+  const comparison = scenario.priceComparison!;
+  const plan = getPlan(scenario.planId);
+  const freeSupplier = getSupplier(comparison.freeSupplierId);
+  const upgradeSupplier = getSupplier(comparison.upgradeSupplierId);
+  const pump = getPump(comparison.pumpId);
+  const free = quoteOffer(plan, freeSupplier, pump);
+  const upgrade = quoteOffer(plan, upgradeSupplier, pump);
+
+  it("compares the same plan and pump at two different suppliers", () => {
+    expect(free.planId).toBe(upgrade.planId);
+    expect(free.pumpId).toBe(upgrade.pumpId);
+    expect(free.supplierId).not.toBe(upgrade.supplierId);
   });
 
-  it("B: every in-network wearable is an upgrade, cheapest is $69.13", () => {
-    const inNetwork = scenarioQuotes("B").preferred.filter(
-      (q) => !q.reasons.includes("out-of-network"),
-    );
-    expect(inNetwork.length).toBeGreaterThan(0);
-    expect(inNetwork.every((q) => q.status === "upgrade")).toBe(true);
-
-    const cheapest = [...inNetwork].sort((a, b) => a.outOfPocketCents - b.outOfPocketCents)[0];
-    expect(cheapest).toMatchObject({
-      supplierId: "little-latch",
-      pumpId: "kestrel-glide",
-      outOfPocketCents: 6913,
-    });
+  it("uses two in-network suppliers with the pump in stock", () => {
+    expect(freeSupplier.inNetworkPlanIds).toContain(plan.id);
+    expect(upgradeSupplier.inNetworkPlanIds).toContain(plan.id);
+    expect(free.inStock).toBe(true);
+    expect(upgrade.inStock).toBe(true);
   });
 
-  it("E: only two suppliers are in network, and one in-network pump is out of stock", () => {
-    const { all, preferred } = scenarioQuotes("E");
-    const inNetworkSuppliers = new Set(
-      all.filter((q) => !q.reasons.includes("out-of-network")).map((q) => q.supplierId),
-    );
-    expect([...inNetworkSuppliers].sort()).toEqual(["anchor-medical", "harborside-dme"]);
-
-    expect(preferred).toContainEqual(
-      expect.objectContaining({ supplierId: "anchor-medical", pumpId: "lunaria-duo", inStock: false }),
-    );
-    expect(preferred).toContainEqual(
-      expect.objectContaining({
-        supplierId: "harborside-dme",
-        pumpId: "lunaria-duo",
-        status: "fully-covered",
-        inStock: true,
-      }),
-    );
+  it("costs exactly $0 at one supplier and $75 at the other, both insurance-eligible", () => {
+    expect(free).toMatchObject({ status: "fully-covered", reasons: [], outOfPocketCents: 0 });
+    expect(upgrade).toMatchObject({ status: "upgrade", reasons: [], outOfPocketCents: 7500 });
+    expect(comparison.upgradeOutOfPocketCents).toBe(7500);
   });
 
-  it("H: no wearable is covered, but $0 covered alternatives exist", () => {
-    const { all, preferred } = scenarioQuotes("H");
-    expect(preferred.length).toBeGreaterThan(0);
-    expect(preferred.every((q) => q.status === "not-covered")).toBe(true);
-    expect(preferred.every((q) => q.reasons.includes("pump-type-not-covered"))).toBe(true);
+  it("ranks the $0 offer ahead of the $75 offer, even though the $75 supplier ships faster", () => {
+    expect(upgrade.shippingDays).toBeLessThan(free.shippingDays);
+    expect(rankQuotes([upgrade, free])).toEqual([free, upgrade]);
+  });
 
-    const alternatives = all.filter(
-      (q) =>
-        q.status === "fully-covered" && q.inStock && getPump(q.pumpId).type === "double-electric",
+  it("keeps the $75 quote for comparison but leaves it out of the default free search", () => {
+    const { offers } = findFreeOffers(scenario.planId, scenario.preferences);
+    const forPump = offers.filter((q) => q.pumpId === comparison.pumpId);
+    expect(forPump).toContainEqual(free);
+    expect(forPump).not.toContainEqual(upgrade);
+  });
+});
+
+describe("Scenario H: order submission timeout", () => {
+  const scenario = getScenario("H");
+  const checkout = scenario.checkout!;
+
+  it("starts from an eligible, in-stock $0 selection", () => {
+    const q = quoteOffer(
+      getPlan(scenario.planId),
+      getSupplier(checkout.supplierId),
+      getPump(checkout.pumpId),
     );
-    expect(alternatives.length).toBeGreaterThan(0);
+    expect(q).toMatchObject({ status: "fully-covered", inStock: true, outOfPocketCents: 0 });
+  });
+
+  it("expects a timeout to leave the order pending reconciliation", () => {
+    expect(checkout.submissionOutcome).toBe("timeout");
+    expect(checkout.expectedOrderStatus).toBe("pending-reconciliation");
+  });
+
+  it("requires an idempotency key so retries cannot duplicate the order", () => {
+    expect(checkout.idempotencyKeyRequired).toBe(true);
   });
 });

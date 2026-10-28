@@ -1,30 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { getPlan, getPump, getSupplier, suppliers } from "@/lib/catalog";
-import { formatCents, supplierPriceCents } from "@/lib/pricing";
-import { quoteOffer, quotesForPlan } from "@/lib/quotes";
+import { getPlan, getPump, getSupplier, plans, suppliers } from "@/lib/catalog";
+import { formatCents } from "@/lib/pricing";
+import { findFreeOffers, quoteOffer, quotesForPlan, rankQuotes } from "@/lib/quotes";
 
 const quote = (planId: string, supplierId: string, pumpId: string) =>
   quoteOffer(getPlan(planId), getSupplier(supplierId), getPump(pumpId));
-
-describe("supplierPriceCents", () => {
-  it("applies the supplier adjustment and rounds to whole cents", () => {
-    expect(supplierPriceCents(getSupplier("cradle-supply"), getPump("lunaria-duo"))).toBe(19900);
-    expect(supplierPriceCents(getSupplier("little-latch"), getPump("kestrel-glide"))).toBe(31913);
-    expect(supplierPriceCents(getSupplier("mama-mend"), getPump("lunaria-duo"))).toBe(20895);
-  });
-});
 
 describe("quoteOffer", () => {
   it("charges nothing when fully covered", () => {
     expect(quote("evergreen-ppo", "cradle-supply", "lunaria-duo")).toMatchObject({
       status: "fully-covered",
-      supplierPriceCents: 19900,
+      listPriceCents: 19900,
       insurancePaysCents: 19900,
       outOfPocketCents: 0,
     });
   });
 
-  it("charges the difference above the allowance for an upgrade", () => {
+  it("charges the difference above the allowance for a default upgrade", () => {
     expect(quote("evergreen-ppo", "cradle-supply", "nestlark-free")).toMatchObject({
       status: "upgrade",
       insurancePaysCents: 25000,
@@ -32,17 +24,20 @@ describe("quoteOffer", () => {
     });
   });
 
-  it("adds the supplier handling fee to upgrades only", () => {
-    // $335.58 - $250 allowance + $15 fee
-    expect(quote("evergreen-ppo", "milkway-medical", "kestrel-glide").outOfPocketCents).toBe(10058);
-    expect(quote("evergreen-ppo", "milkway-medical", "nestlark-classic").outOfPocketCents).toBe(0);
+  it("uses the override's exact member cost", () => {
+    expect(quote("evergreen-ppo", "mama-mend", "nestlark-classic")).toMatchObject({
+      status: "upgrade",
+      listPriceCents: 22900,
+      insurancePaysCents: 15400,
+      outOfPocketCents: 7500,
+    });
   });
 
-  it("charges full price when not covered", () => {
+  it("charges full list price when not covered", () => {
     expect(quote("evergreen-ppo", "willow-lane", "willowmere-pro")).toMatchObject({
       status: "not-covered",
       insurancePaysCents: 0,
-      outOfPocketCents: 47405,
+      outOfPocketCents: 49900,
     });
   });
 
@@ -70,19 +65,97 @@ describe("quotesForPlan", () => {
     expect(quotesForPlan("evergreen-ppo")).toEqual(quotesForPlan("evergreen-ppo"));
   });
 
-  it("always splits the price between insurer and member without going negative", () => {
-    for (const q of quotesForPlan("summit-epo")) {
-      expect(q.insurancePaysCents).toBeGreaterThanOrEqual(0);
-      expect(q.outOfPocketCents).toBeGreaterThanOrEqual(0);
-      expect(q.insurancePaysCents + q.outOfPocketCents).toBeGreaterThanOrEqual(q.supplierPriceCents);
+  it("always splits list price exactly between insurer and member", () => {
+    for (const plan of plans) {
+      for (const q of quotesForPlan(plan.id)) {
+        expect(q.insurancePaysCents).toBeGreaterThanOrEqual(0);
+        expect(q.outOfPocketCents).toBeGreaterThanOrEqual(0);
+        expect(q.insurancePaysCents + q.outOfPocketCents).toBe(q.listPriceCents);
+      }
     }
+  });
+});
+
+describe("rankQuotes", () => {
+  it("orders in stock, then coverage, then member cost, then shipping", () => {
+    const ranked = rankQuotes(quotesForPlan("evergreen-ppo"));
+    const firstOutOfStock = ranked.findIndex((q) => !q.inStock);
+    expect(ranked.slice(firstOutOfStock).every((q) => !q.inStock)).toBe(true);
+
+    const order = ["fully-covered", "upgrade", "not-covered"];
+    const statusRanks = ranked.slice(0, firstOutOfStock).map((q) => order.indexOf(q.status));
+    expect(statusRanks).toEqual([...statusRanks].sort((a, b) => a - b));
+
+    // $0 + 2-day shipping ties are broken by supplier id, then pump id.
+    expect(ranked[0]).toMatchObject({ supplierId: "first-feed", pumpId: "kestrel-pocket" });
+  });
+
+  it("does not mutate its input", () => {
+    const quotes = quotesForPlan("evergreen-ppo");
+    const copy = [...quotes];
+    rankQuotes(quotes);
+    expect(quotes).toEqual(copy);
+  });
+});
+
+describe("findFreeOffers", () => {
+  it("returns only eligible, in-stock $0 offers, ranked", () => {
+    for (const plan of plans) {
+      const result = findFreeOffers(plan.id, { pumpTypes: [] });
+      expect(result.outcome).toBe("free_offers_found");
+      for (const q of result.offers) {
+        expect(q).toMatchObject({ status: "fully-covered", inStock: true, outOfPocketCents: 0 });
+      }
+      expect(result.offers).toEqual(rankQuotes(result.offers));
+    }
+  });
+
+  it("excludes an in-stock eligible offer that costs money", () => {
+    const { offers } = findFreeOffers("evergreen-ppo", { pumpTypes: ["double-electric"] });
+    expect(offers).not.toContainEqual(
+      expect.objectContaining({ supplierId: "mama-mend", pumpId: "nestlark-classic" }),
+    );
+  });
+
+  it("returns no_free_offers with an empty list instead of recommending paid upgrades", () => {
+    // Every in-network Evergreen wearable is an in-stock paid upgrade.
+    const paidWearables = quotesForPlan("evergreen-ppo").filter(
+      (q) => getPump(q.pumpId).type === "wearable" && q.status === "upgrade" && q.inStock,
+    );
+    expect(paidWearables.length).toBeGreaterThan(0);
+
+    expect(findFreeOffers("evergreen-ppo", { pumpTypes: ["wearable"] })).toEqual({
+      outcome: "no_free_offers",
+      offers: [],
+    });
+  });
+
+  it("returns no_free_offers when nothing matching is insurance-eligible", () => {
+    expect(findFreeOffers("bayview-medicaid", { pumpTypes: ["wearable"] })).toEqual({
+      outcome: "no_free_offers",
+      offers: [],
+    });
+  });
+
+  it("returns coverage_unverified for an unknown plan instead of throwing", () => {
+    expect(findFreeOffers("unknown-plan", { pumpTypes: [] })).toEqual({
+      outcome: "coverage_unverified",
+      reason: "unknown_plan",
+      offers: [],
+    });
+  });
+
+  it("returns coverage_unverified on a simulated verification failure, even when free offers exist", () => {
+    expect(
+      findFreeOffers("evergreen-ppo", { pumpTypes: [] }, { simulateVerificationFailure: true }),
+    ).toEqual({ outcome: "coverage_unverified", reason: "verification_failed", offers: [] });
   });
 });
 
 describe("formatCents", () => {
   it("formats as US dollars", () => {
     expect(formatCents(0)).toBe("$0.00");
-    expect(formatCents(14900)).toBe("$149.00");
+    expect(formatCents(7500)).toBe("$75.00");
     expect(formatCents(120000)).toBe("$1,200.00");
   });
 });
