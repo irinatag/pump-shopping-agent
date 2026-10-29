@@ -1,0 +1,103 @@
+import { conflict, list, product, v } from "@/lib/products/build";
+import type { Source } from "@/lib/products/types";
+
+const src = (id: string, path: string): Source => ({
+  id,
+  url: `https://babybuddhaproducts.com/products/${path}`,
+  publisher: "BabyBuddha",
+  kind: "manufacturer-page",
+  accessedOn: "2026-10-28",
+});
+
+export const babyBuddhaSources: Source[] = [
+  src("babybuddha-3", "buddha-3-0"),
+  src("babybuddha-wearable", "babybuddha-wearable-breast-pump"),
+  src("babybuddha-manual", "babybuddha-manual-breast-pump"),
+];
+
+export const babyBuddhaProducts = [
+  product({
+    id: "babybuddha-3",
+    brand: "BabyBuddha",
+    model: "BabyBuddha 3.0",
+    sourceIds: ["babybuddha-3"],
+    category: v("portable-electric", "babybuddha-3", "Its compact external motor hangs from the included lanyard and connects by tubing to the flanges and bottles."),
+    power: v(["built-in-battery"], "babybuddha-3", "Rechargeable external motor with USB-C charging"),
+    maxSuction: v({ amount: 315, unit: "mmHg", comparator: "up-to" }, "babybuddha-3", "Adjustable suction ranging from 53 to 315 mmHg"),
+    suctionLevels: v(
+      "Soft Stimulation 6, Classic Expression 9, Double Drop Expression 9 levels",
+      "babybuddha-3",
+      "Soft Stimulation with 6 levels",
+      "Classic Expression with 9 levels",
+      "Double Drop Expression with 9 levels",
+    ),
+    closedSystem: v(true, "babybuddha-3", "Closed system with BPA-free construction"),
+    includedItems: list("babybuddha-3", [
+      "BabyBuddha Rechargeable Primary Portable Breast Pump Unit (Black)",
+      "Two (2) 24mm EasyFit Flanges",
+      "Two (2) Sets of Duckbill Valves",
+      "Ten (10) inserts (2 of each 13mm, 15mm, 17mm, 19mm, 21mm)",
+      "One (1) Pair of Silicone Diaphragms",
+      "Two (2) Bottles",
+      "Two (2) Bottle Screw Caps",
+      "Two (2) Bottle Milk Storage Lids",
+      "Two (2) Pump Upper Covers",
+      "Three detachable tubes (for easy cleaning) & T-connector.",
+      "USB-C Charging Cable (charge to full in 4 hours)",
+      "Lanyard",
+      "Flange ruler",
+      "Carrying Tote",
+    ]),
+  }),
+  product({
+    id: "babybuddha-wearable",
+    brand: "BabyBuddha",
+    model: "Wearable",
+    sourceIds: ["babybuddha-wearable"],
+    category: v("wearable", "babybuddha-wearable", "Our Wearable Pump is designed to move with you, it’s the ultimate in-bra solution."),
+    power: v(["built-in-battery"], "babybuddha-wearable", "Full charge in 60 minutes with more than two hours of pumping time"),
+    batteryLife: v({ amount: 120, unit: "min", comparator: "at-least" }, "babybuddha-wearable", "Full charge in 60 minutes with more than two hours of pumping time"),
+    suctionLevels: v("4 modes, 30 settings", "babybuddha-wearable", "Four modes and 30 settings let you adjust the pumping pattern and strength for comfort."),
+    handsFree: v(true, "babybuddha-wearable", "Our Wearable Pump is designed to move with you, it’s the ultimate in-bra solution."),
+    capacity: conflict(
+      "The page states two different cup capacities.",
+      [{ amount: 6, unit: "oz", comparator: "at-least" }, "babybuddha-wearable", "Collection capacity of more than 6 ounces per cup"],
+      [{ amount: 8, unit: "oz", comparator: "eq" }, "babybuddha-wearable", "the BabyBuddha Wearable gives you 8oz of space in each cup"],
+    ),
+    includedItems: list("babybuddha-wearable", [
+      "2x Wearable Breast Pumps (assembled with 2 x 24mm Silicone Flange, 2 x Duck bill. 2x Diaphragm)",
+      "13/15/17/19/21 Inserts (each size x 2)",
+      "2 x Extra duck bill valves",
+      "2 x Extra diaphragms",
+      "2 x Rapid charging cables",
+      "2x Bra adjusters",
+      "Flange size guide",
+      "Carrying pouch",
+    ]),
+  }),
+  product({
+    id: "babybuddha-manual",
+    brand: "BabyBuddha",
+    model: "Manual Breast Pump",
+    sourceIds: ["babybuddha-manual"],
+    category: v("manual", "babybuddha-manual", "Your BabyBuddha Manual Breast Pump box includes:"),
+    dishwasherSafe: v(true, "babybuddha-manual", "are top-rack dishwasher safe!"),
+    cleaning: v("Flash boil up to 60 seconds, or top-rack dishwasher", "babybuddha-manual", "All parts of your manual breast pump can be flash boiled (for no longer than 60 seconds)"),
+    capacity: v({ amount: 4.7, unit: "oz", comparator: "eq" }, "babybuddha-manual", "1 Wide-Neck Bottle (4.7 Ounces)"),
+    includedItems: list("babybuddha-manual", [
+      "1 Wide-Neck Bottle (4.7 Ounces)",
+      "1 Slow Flow Nipple",
+      "1 Bottle Stand",
+      "1 Bottle Cover",
+      "1 Bottle Screw Cap",
+      "1 Bottle Adaptor",
+      "1 Pump Body Top with a Silicone Sealant",
+      "1 Handle",
+      "1 Massage Cushion",
+      "1 Hygiene Cover",
+      "1 Silicone Cylinder",
+      "1 Cylinder Cover",
+      "2 Pistons",
+    ]),
+  }),
+];
