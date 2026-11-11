@@ -44,7 +44,7 @@ Every product has the same 19 attributes. Each is exactly one of:
 
 Each evidence item is `{ sourceId, quote, scope?, section? }`:
 
-- `scope` — `this-product` (default; the model's own page describes it), `brand-wide` (a manufacturer statement covering all its pumps, e.g. Zomee's "All Zomee breast pumps … have a fully enclosed, anti-backflow system" on the Z2 page), or `other-product` (a statement about this model on another model's page, e.g. "tube-free" for Elvie Pump on the Elvie Stride page). Evidence from any page other than the product's own must carry `brand-wide` or `other-product`.
+- `scope` — `this-product` (default; the model's own page describes it), `brand-wide` (a manufacturer statement covering all its pumps, e.g. Zomee's "All Zomee breast pumps … have a fully enclosed, anti-backflow system" on the Z2 page), or `other-product` (a statement about this model on another model's page, e.g. "tube-free" for Elvie Pump on the Elvie Stride page). Evidence from any page other than the product's own must carry `brand-wide` or `other-product`. A source of kind `manufacturer-manual` listed in a product's `sourceIds` is that model's own instructions for use (linked from its product page) and counts as its own document.
 - `section` — `product-content` (default), `page-title`, or `page-metadata` (the model's own `<title>` or meta description, e.g. Symphony PLUS "hospital-grade, multi-user").
 
 ### Classification model
@@ -124,10 +124,22 @@ Current results: flange-and-bottle electric 24, wearable 23, hands-free electric
 | Lansinoh NaturalWave | capacity | "5 oz/60 ml" (units disagree) | |
 | Zomee Fit | capacity | 6 oz · 150 ml | Fullness-sensor settings (4/5/6 oz) lean toward 6 oz |
 | BabyBuddha Wearable | capacity | more than 6 oz · 8 oz | |
+| Medela Sonata | batteryLife | 1.5 hours · up to an hour | Added 2026-11-11 (trust-audit correction). The instructions for use give no runtime. |
+
+### Corrections after the catalog trust audit (2026-11-11)
+
+Targeted fixes for the three FAIL findings in `docs/CATALOG_TRUST_REPORT.md` (N-01, N-04, N-05). The coverage table above is the remediation snapshot and is not updated here; `docs/CATALOG_EXPORT.json` reflects the current catalog.
+
+| Product | Attribute | Before | After | Source |
+|---|---|---|---|---|
+| Medela Sonata | powerSources | verified `[built-in-battery]` | verified `[mains, built-in-battery]` | Sonata instructions for use, §10 "Powering Your Breast Pump" |
+| Medela Sonata | batteryLife | verified 90 min | conflicting: 90 min · up to 60 min | product page (feature copy vs FAQ) |
+| Medela Pump In Style Pro+ Traditional | weight | unknown | verified 715 g, exact, pump unit (`motor`) | Pro+ instructions for use linked from the Traditional page, Technical Specifications |
+| BabyBuddha 3.0 | suctionLevels | 3 modes listed | 4 modes, 30 settings (6 / 9 / 9 / 6) | product page |
 
 ### Recording rules
 
-- **Manufacturer US pages only.** Supplier and retailer pages are never used for specifications. Customer reviews, related-product carousels, site navigation, and multi-product comparison tables are never evidence.
+- **Manufacturer US pages only**, plus the model's own manufacturer instructions for use (PDF) when its product page links them. Supplier and retailer pages are never used for specifications. Customer reviews, related-product carousels, site navigation, and multi-product comparison tables are never evidence.
 - **Verbatim quotes**, matched after normalizing whitespace, zero-width characters and typographic quote marks only.
 - **Ambiguous context → unknown with a note** (e.g. Spectra SG weight appears only in a feature block written for the SG Portable; eufy battery/capacity appear only in a comparison table).
 - **Variants vs bundles.** Separately sold configurations with different specs are separate records; `variantOf` is set only when the manufacturer presents one as a version of the other (Motif Luna with Battery). Bundles and adapters are excluded (Zomee Manual is a "Manual Hand Pump Adapter"). Evenflo Advanced and Deluxe Advanced share identical copy and are separate records with no variant claim.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getProduct, products } from "@/lib/products";
+import { getProduct, getSource, products } from "@/lib/products";
 import { ATTRIBUTE_KEYS } from "@/lib/products/build";
 import { classifyProduct } from "@/lib/products/classification";
 import type { Attribute, Comparator, Evidence, Measure, Product } from "@/lib/products/types";
@@ -187,8 +187,10 @@ const COMPARATIVE_ALLOWED = new Set(["elvie-stride|Unlike Elvie Pump, there is a
 describe("evidence provenance", () => {
   it("flags evidence from another product's page as brand-wide or other-product", () => {
     for (const p of products) {
+      // The model's own documents: its product page, plus its own instructions for use when listed.
+      const own = new Set([p.sourceIds[0], ...p.sourceIds.filter((id) => getSource(id).kind === "manufacturer-manual")]);
       for (const { k, e } of evidenceOf(p)) {
-        if (e.sourceId !== p.sourceIds[0]) expect(["brand-wide", "other-product"], `${p.id}.${k} cites ${e.sourceId}`).toContain(e.scope);
+        if (!own.has(e.sourceId)) expect(["brand-wide", "other-product"], `${p.id}.${k} cites ${e.sourceId}`).toContain(e.scope);
       }
     }
   });

@@ -96,7 +96,10 @@ export interface Product {
   market: "US";
   /** Set when this record is a variant of another (e.g. with/without battery). */
   variantOf?: string;
-  /** Manufacturer pages this record was built from; the first is the model's own page. */
+  /**
+   * Manufacturer sources this record was built from; the first is the model's own page.
+   * A listed "manufacturer-manual" source is this model's own instructions for use.
+   */
   sourceIds: string[];
   mechanism: Attribute<"electric" | "manual">;
   collection: Attribute<CollectionType[]>;
