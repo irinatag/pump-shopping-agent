@@ -1,20 +1,30 @@
-import { inferred, list, metaQuote, product, unknown, v } from "@/lib/products/build";
+import { conflict, inferred, list, metaQuote, product, unknown, v } from "@/lib/products/build";
 import type { Source } from "@/lib/products/types";
 
 const BASE = "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps";
-const src = (id: string, path: string): Source => ({
+const src = (id: string, path: string, accessedOn = "2026-10-28"): Source => ({
   id,
   url: `${BASE}/${path}`,
   publisher: "Medela",
   kind: "manufacturer-page",
-  accessedOn: "2026-10-28",
+  accessedOn,
+});
+/** A model's own instructions for use, linked from its product page. */
+const manual = (id: string, path: string, accessedOn: string): Source => ({
+  id,
+  url: `https://www.medela.com/010-products/010-pumps/${path}`,
+  publisher: "Medela",
+  kind: "manufacturer-manual",
+  accessedOn,
 });
 
 export const medelaSources: Source[] = [
   src("medela-pis-pro", "classic-electric/pump-in-style-pro-double-electric-breast-pump"),
-  src("medela-pis-pro-plus-traditional", "classic-electric/pump-in-style-pro-traditional-rechargeable-electric-breast-pump"),
+  src("medela-pis-pro-plus-traditional", "classic-electric/pump-in-style-pro-traditional-rechargeable-electric-breast-pump", "2026-11-11"),
+  manual("medela-pis-pro-plus-ifu", "010-hands-free-electric/060-pump-in-style-pro-plus/pdfs/instructions-for-use-pns-pro-plus.pdf", "2026-11-11"),
   src("medela-pis-pro-plus-hands-free", "hands-free-electric/pump-in-style-pro-hands-free-rechargeable-breast-pump"),
-  src("medela-sonata", "classic-electric/sonata-smart-double-electric-breast-pump"),
+  src("medela-sonata", "classic-electric/sonata-smart-double-electric-breast-pump", "2026-11-11"),
+  manual("medela-sonata-ifu", "020-classic-electric/070-sonata-smart-breast-pump/pdf-downloads/sonata-instruction-manual.pdf", "2026-11-11"),
   src("medela-freestyle-hands-free", "hands-free-electric/freestyle-hands-free-breast-pump"),
   src("medela-freestyle-mini", "hands-free-electric/freestyle-mini-hands-free-double-electric-breast-pump"),
   src("medela-pis-hands-free", "hands-free-electric/pump-in-style-hands-free-double-electric-breast-pump"),
@@ -67,9 +77,11 @@ export const medelaProducts = [
     id: "medela-pump-in-style-pro-plus-traditional",
     brand: "Medela",
     model: "Pump In Style Pro+ Traditional Rechargeable",
-    sourceIds: ["medela-pis-pro-plus-traditional"],
+    sourceIds: ["medela-pis-pro-plus-traditional", "medela-pis-pro-plus-ifu"],
     collection: v(["flanges-and-bottles"], "medela-pis-pro-plus-traditional", "the traditional bottle set", "2 x bottles & lids"),
     powerSources: v(["built-in-battery"], "medela-pis-pro-plus-traditional", "now offers more freedom with a rechargeable battery!"),
+    // Technical specifications in the Pro+ instructions for use linked from this model's page.
+    weight: v({ amount: 715, unit: "g", comparator: "eq", scope: "motor" }, "medela-pis-pro-plus-ifu", "Weight (pump unit) 1.57 lbs (715 g)"),
     maxSuction: MAX_SUCTION_IN_MANUAL,
     suctionLevels: v("16 adjustable suction levels", "medela-pis-pro-plus-traditional", "With 16 adjustable suction levels"),
     dishwasherSafe: v({ parts: "unspecified", topRackOnly: null }, "medela-pis-pro-plus-traditional", "Dishwasher safe, so you spend less time cleaning and more time with your baby."),
@@ -111,12 +123,27 @@ export const medelaProducts = [
     id: "medela-sonata",
     brand: "Medela",
     model: "Sonata Smart Double Electric",
-    sourceIds: ["medela-sonata"],
+    sourceIds: ["medela-sonata", "medela-sonata-ifu"],
     mechanism: v("electric", "medela-sonata", "Sonata® Smart double electric breast pump"),
     collection: v(["flanges-and-bottles"], "medela-sonata", "1 x Double pumping kit", "4 x 5oz. storage bottles with lids"),
     pumping: v("double", "medela-sonata", "1 x Double pumping kit"),
-    powerSources: v(["built-in-battery"], "medela-sonata", "1 x Sonata™ breast pump with rechargeable lithium-ion battery"),
-    batteryLife: v({ amount: 90, unit: "min", comparator: "eq" }, "medela-sonata", "with 1.5 hours of battery life"),
+    powerSources: v(
+      ["mains", "built-in-battery"],
+      "medela-sonata-ifu",
+      "There are two ways to power your breast pump for your pumping session:",
+      "Plug power cord into the power adaptor port on the back of the breast pump. Plug power cord into power source.",
+      "Your breast pump contains a Lithium ION rechargeable battery.",
+      { sourceId: "medela-sonata", quote: "1 x Sonata™ breast pump with rechargeable lithium-ion battery" },
+    ),
+    batteryLife: conflict(
+      "The product page gives two runtimes for one charge: 1.5 hours in the portability copy and up to an hour in the FAQ. Neither states different conditions. The instructions for use give no runtime.",
+      [{ amount: 90, unit: "min", comparator: "eq" }, "medela-sonata", "with 1.5 hours of battery life"],
+      [
+        { amount: 60, unit: "min", comparator: "up-to" },
+        "medela-sonata",
+        "Sonata’s battery will last up to an hour on one charge. One hour of pumping time will give a daily pumping mom 3-4 sessions before having to charge Sonata again.",
+      ],
+    ),
     portability: v(["carry-handle"], "medela-sonata", "a built-in handle for easy transport"),
     weight: v({ amount: 2.2, unit: "lb", comparator: "eq", scope: "motor" }, "medela-sonata", "Unit weight: 2.2lbs. (breast pump only)"),
     handsFree: v("with-accessories", "medela-sonata", "You can pump hands-free with the Hands-free™ Pumping Bustier!"),

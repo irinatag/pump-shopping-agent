@@ -1,16 +1,16 @@
 import { conflict, inferred, list, product, v } from "@/lib/products/build";
 import type { Source } from "@/lib/products/types";
 
-const src = (id: string, path: string): Source => ({
+const src = (id: string, path: string, accessedOn = "2026-10-28"): Source => ({
   id,
   url: `https://babybuddhaproducts.com/products/${path}`,
   publisher: "BabyBuddha",
   kind: "manufacturer-page",
-  accessedOn: "2026-10-28",
+  accessedOn,
 });
 
 export const babyBuddhaSources: Source[] = [
-  src("babybuddha-3", "buddha-3-0"),
+  src("babybuddha-3", "buddha-3-0", "2026-11-10"),
   src("babybuddha-wearable", "babybuddha-wearable-breast-pump"),
   src("babybuddha-manual", "babybuddha-manual-breast-pump"),
 ];
@@ -27,11 +27,13 @@ export const babyBuddhaProducts = [
     portability: v(["clip-or-lanyard"], "babybuddha-3", "Its compact external motor hangs from the included lanyard"),
     maxSuction: v({ amount: 315, unit: "mmHg", comparator: "up-to" }, "babybuddha-3", "Adjustable suction ranging from 53 to 315 mmHg"),
     suctionLevels: v(
-      "Soft Stimulation 6, Classic Expression 9, Double Drop Expression 9 levels",
+      "4 modes, 30 settings: Soft Stimulation 6, Classic Expression 9, Double Drop Expression 9, Classic Stimulation 6 levels",
       "babybuddha-3",
+      "Choose from four pumping modes and 30 total settings:",
       "Soft Stimulation with 6 levels",
       "Classic Expression with 9 levels",
       "Double Drop Expression with 9 levels",
+      "Classic Stimulation with 6 levels",
     ),
     closedSystem: v(true, "babybuddha-3", "Closed system with BPA-free construction"),
     includedItems: list("babybuddha-3", [
