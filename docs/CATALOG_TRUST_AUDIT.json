@@ -1,0 +1,3927 @@
+{
+ "schema": "pumppath.catalog-trust-audit/v1",
+ "auditDate": "2026-11-10",
+ "catalogCommit": "23d0d89",
+ "scope": "lib/products (catalog), lib/grounding.ts, lib/offers (free-only rule), lib/scenarios.ts",
+ "verdict": "READY WITH LIMITATIONS",
+ "catalogTotals": {
+  "products": 74,
+  "distinctModels": 73,
+  "variants": 1,
+  "brands": 12,
+  "sources": 73,
+  "attributeSlots": 1406,
+  "verified": 618,
+  "inferred": 78,
+  "conflicting": 8,
+  "unknown": 702,
+  "classifications": {
+   "flange-bottle-electric": 24,
+   "hands-free-electric": 11,
+   "wearable": 23,
+   "manual": 11,
+   "multi-user": 4,
+   "unclassified": 1
+  },
+  "classificationsUsingInferred": 40,
+  "unclassified": [
+   "momcozy-m6-mobile-style"
+  ],
+  "classificationsWithNameOnlyCollectionEvidence": [
+   "medela-melody-inbra",
+   "medela-motion-inbra",
+   "spectra-premier-wearable",
+   "motif-aura-glow",
+   "momcozy-s9-pro",
+   "momcozy-wellness-1",
+   "momcozy-s12-pro-quick",
+   "elvie-pump",
+   "ameda-glo",
+   "eufy-s2-pro",
+   "eufy-s2"
+  ],
+  "commerceFieldsInProductRecords": 0
+ },
+ "remediation": [
+  {
+   "id": "I-06",
+   "status": "RESOLVED"
+  },
+  {
+   "id": "I-07",
+   "status": "RESOLVED"
+  },
+  {
+   "id": "I-08",
+   "status": "RESOLVED"
+  },
+  {
+   "id": "I-09",
+   "status": "PARTIALLY RESOLVED"
+  },
+  {
+   "id": "I-10",
+   "status": "RESOLVED"
+  },
+  {
+   "id": "I-11",
+   "status": "RESOLVED"
+  },
+  {
+   "id": "I-12",
+   "status": "RESOLVED"
+  },
+  {
+   "id": "I-13",
+   "status": "PARTIALLY RESOLVED"
+  },
+  {
+   "id": "I-14",
+   "status": "PARTIALLY RESOLVED"
+  },
+  {
+   "id": "I-15",
+   "status": "PARTIALLY RESOLVED"
+  },
+  {
+   "id": "I-16",
+   "status": "PARTIALLY RESOLVED"
+  }
+ ],
+ "newFindings": [
+  {
+   "id": "N-01",
+   "severity": "high",
+   "status": "FAIL",
+   "area": "powerSources",
+   "products": [
+    "medela-sonata"
+   ],
+   "finding": "Recorded verified ['built-in-battery'] only. Live page: 'If you can't fully charge the battery, you can use it plugged in to a power outlet' and 'The pump is still operable ... when plugged into an external power source'. Mains operation is stated but missing."
+  },
+  {
+   "id": "N-02",
+   "severity": "high",
+   "status": "NEEDS REVIEW",
+   "area": "list semantics",
+   "products": [
+    "43 verified powerSources = [built-in-battery]"
+   ],
+   "finding": "List-valued attributes (powerSources, portability, collection) carry no completeness flag. A verified ['built-in-battery'] reads as 'battery only' even when the page lists an AC adapter (S1 Plus, 9 Plus, S3 Pro, Pearl, Z2, Luna with Battery, Duo). The rule 'a charger is not mains' fixed false positives but created unflagged incompleteness."
+  },
+  {
+   "id": "N-03",
+   "severity": "medium",
+   "status": "NEEDS REVIEW",
+   "area": "classification evidence",
+   "products": [
+    "medela-melody-inbra",
+    "medela-motion-inbra",
+    "spectra-premier-wearable",
+    "motif-aura-glow",
+    "momcozy-s9-pro",
+    "momcozy-wellness-1",
+    "momcozy-s12-pro-quick",
+    "elvie-pump",
+    "ameda-glo",
+    "eufy-s2-pro",
+    "eufy-s2"
+   ],
+   "finding": "collection='in-bra-wearable' (defined as self-contained, no external unit) is verified from the product name or 'fully wearable' wording only. The word 'wearable' does not by itself establish 'no external unit'. Live re-check: GLO page supports it in other lines; S12 Pro Quick page does not (only a customer review). These 11 values drive 11 'wearable' classifications. This is the I-09 pattern moved from category to collection."
+  },
+  {
+   "id": "N-04",
+   "severity": "medium",
+   "status": "FAIL",
+   "area": "false unknowns",
+   "products": [
+    "medela-pump-in-style-pro-plus-traditional"
+   ],
+   "finding": "weight is unknown, but the live product region states 'Under-2-pound and small design' and 'Rechargeable battery & under-2-pound design' (the sibling Pro+ Hands-free records lt 2 lb from equivalent wording). The unknown-with-signal verifier has no weight pattern. Related, rule-excluded: eufy S2 Pro 'Battery Life: 6.5 Hour' and capacity sit in a comparison block headed by the S2 Pro column."
+  },
+  {
+   "id": "N-05",
+   "severity": "medium",
+   "status": "FAIL",
+   "area": "suctionLevels",
+   "products": [
+    "babybuddha-3"
+   ],
+   "finding": "Stored value lists three modes; the live page says 'four pumping modes and 30 total settings' and lists 'Classic Stimulation with 6 levels' as the fourth."
+  },
+  {
+   "id": "N-06",
+   "severity": "medium",
+   "status": "NEEDS REVIEW",
+   "area": "cleaning scope",
+   "products": [
+    "motif-roam",
+    "motif-aura-glow",
+    "lansinoh-thrive-2-in-1",
+    "willow-wave",
+    "babybuddha-manual"
+   ],
+   "finding": "Composite cleaning strings contain content not in their stored quotes. Roam's value 'Boil parts 5 minutes ...' drops the source exclusion 'everything except the motor and tubing'; Aura Glow's '(except motor)' is supported only by an unquoted adjacent line."
+  },
+  {
+   "id": "N-07",
+   "severity": "medium",
+   "status": "NEEDS REVIEW",
+   "area": "dishwasher scope",
+   "products": [
+    "willow-360",
+    "willow-go",
+    "medela-pump-in-style-hands-free",
+    "10 records with parts='unspecified'"
+   ],
+   "finding": "parts='all' means 'all parts the source calls parts' (Willow 360: 'two parts to clean ... both are dishwasher-safe'), not the device; 'unspecified' (e.g. PIS Pro 'Only 4 parts to clean and dishwasher safe') has no component scope. Grounding passes these as verified objects with no definition, so 'the pump is dishwasher safe' is an easy misreading."
+  },
+  {
+   "id": "N-08",
+   "severity": "medium",
+   "status": "NEEDS REVIEW",
+   "area": "qualifiers",
+   "products": [
+    "elvie-stride",
+    "motif-luna-with-battery",
+    "lansinoh-thrive-2-in-1"
+   ],
+   "finding": "Qualifiers lost from structured values: Stride 'up to -300 mmHG in a single cup set up' stored as plain up-to 300; Luna with Battery 'up to 4+ hours' stored as up-to 240 (the '+' is a lower bound, and 'over 2 hours' / '4+ hours' are compatible, so the recorded conflict is questionable); Thrive capacity 6 oz applies to the hands-free cups only (box also has 5 oz bottles)."
+  },
+  {
+   "id": "N-09",
+   "severity": "low",
+   "status": "NEEDS REVIEW",
+   "area": "closedSystem consistency",
+   "products": [
+    "zomee-fit",
+    "zomee-mothers-nature-w1",
+    "spectra-synergy-gold",
+    "momcozy-v1-pro",
+    "momcozy-v2-pro"
+   ],
+   "finding": "Anti-backflow wording is 'inferred' for SG and Momcozy V1/V2 but 'verified' for Zomee Fit (own page: 'anti-backflow system') and W1 (only evidence is the brand-wide Z2 statement 'fully enclosed, anti-backflow system')."
+  },
+  {
+   "id": "N-10",
+   "severity": "medium",
+   "status": "NEEDS REVIEW",
+   "area": "classification rule",
+   "products": [
+    "67 products with multiUser unknown"
+   ],
+   "finding": "classifyProduct treats multiUser=unknown as not multi-user. 55 of these 67 are classified into personal-use electric categories (23 flange-bottle, 22 wearable, 10 hands-free) that drive coverage, and basis ['mechanism','collection'] does not disclose the assumption."
+  },
+  {
+   "id": "N-11",
+   "severity": "low",
+   "status": "NEEDS REVIEW",
+   "area": "duplicates",
+   "products": [
+    "evenflo-advanced-double-electric",
+    "evenflo-deluxe-advanced-double-electric",
+    "eufy-s2",
+    "eufy-s2-pro"
+   ],
+   "finding": "Evenflo Advanced vs Deluxe Advanced have identical established facts (documented in DATA.md). eufy S2 vs S2 Pro carry identical suction/noise/cleaning quotes. Neither pair is distinguishable from catalog facts, and grounding does not say so."
+  },
+  {
+   "id": "N-12",
+   "severity": "low",
+   "status": "NEEDS REVIEW",
+   "area": "variant identity",
+   "products": [
+    "elvie-pump",
+    "momcozy-s9-pro",
+    "momcozy-m5-smart"
+   ],
+   "finding": "Elvie Pump page sells Single and Double configurations under one record (includedItems describes one configuration). Momcozy S9 Pro page title says 'S9 Pro ... Upgraded'; M5 URL says 'upgraded-with-app-control'. Model names may not match the specific edition quoted."
+  },
+  {
+   "id": "N-13",
+   "severity": "medium",
+   "status": "NEEDS REVIEW",
+   "area": "grounding",
+   "products": [],
+   "finding": "11 of 54 adversarial payload checks fail: rules do not explain comparators, sessions-vs-minutes, dishwasher part scope, list completeness or noise comparability; variantOf is not exposed; classification basis hides the multiUser assumption; identical sibling records are not flagged. No unknown, inferred or conflicting value is promoted to verified."
+  },
+  {
+   "id": "N-14",
+   "severity": "low",
+   "status": "NEEDS REVIEW",
+   "area": "documentation",
+   "products": [
+    "momcozy-s9-pro"
+   ],
+   "finding": "DATA.md says S9 Pro battery is stated only as sessions, but batteryLife is verified 270 min. DATA.md cites 191 simulated quotes; the provider returns 188 (4 plans x 47 offerings)."
+  },
+  {
+   "id": "N-15",
+   "severity": "low",
+   "status": "NEEDS REVIEW",
+   "area": "extraction",
+   "products": [],
+   "finding": "Live product regions from region.py include retail prices and insurance calls-to-action (e.g. '$175.94 Sale', '$169.99', 'Get ... Through Insurance', 'available for purchase through insurance only'). No such text is in any product record today, but the extraction region is not commerce-free."
+  },
+  {
+   "id": "N-16",
+   "severity": "low",
+   "status": "NEEDS REVIEW",
+   "area": "schema",
+   "products": [
+    "elvie-curve"
+   ],
+   "finding": "Manual silicone pump coded collection='in-bra-wearable', whose definition is 'motor + collector'. Classification is still correct (manual wins), but the value contradicts the schema definition."
+  }
+ ],
+ "attributeAudit": {
+  "selection": {
+   "seed": 20261110,
+   "method": "Reproducible stratified sample of 30 verified attributes for the trust audit.\nPopulation: every (product, attribute) with status \"verified\" (618), minus the 20 attributes\nsampled in docs/CATALOG_AUDIT.md (S01-S20) and the 10 targeted re-check attributes (T01-T10).\nAllocation: 30 slots across brands proportional to each brand's verified-attribute count,\nminimum 1 per brand (largest-remainder rounding). Within a brand: random.Random(SEED) shuffle of\nthe brand's eligible attributes sorted by (product id, attribute); take in order, skipping any\nproduct that already has 2 picks. Seed = 20261110 (audit date).",
+   "populationSize": 597,
+   "brandQuota": {
+    "Ameda": 2,
+    "BabyBuddha": 2,
+    "Elvie": 1,
+    "Evenflo": 1,
+    "Lansinoh": 3,
+    "Medela": 6,
+    "Momcozy": 4,
+    "Motif": 3,
+    "Spectra": 3,
+    "Willow": 2,
+    "Zomee": 2,
+    "eufy": 1
+   },
+   "randomModels": 29,
+   "randomBrands": 12
+  },
+  "tally": {
+   "PASS": 36,
+   "NEEDS REVIEW": 3,
+   "FAIL": 1
+  },
+  "items": [
+   {
+    "id": "T01",
+    "set": "targeted",
+    "productId": "lansinoh-naturalwave",
+    "brand": "Lansinoh",
+    "model": "NaturalWave Double Electric",
+    "attribute": "collection",
+    "catalogStatus": "verified",
+    "storedValue": [
+     "flanges-and-bottles"
+    ],
+    "evidence": [
+     {
+      "url": "https://lansinoh.com/products/naturalwave-double-electric-breast-pump",
+      "quote": "2 Flange Bodies",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://lansinoh.com/products/naturalwave-double-electric-breast-pump",
+      "quote": "2 Lansinoh Bottles (5 oz/60 ml)",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live box list: '2 Flange Bodies', '2 ComfortFit Flanges 25 mm', '2 Lansinoh Bottles'. Flanges + bottles stated; handle/battery correctly kept out of classification.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "T02",
+    "set": "targeted",
+    "productId": "medela-sonata",
+    "brand": "Medela",
+    "model": "Sonata Smart Double Electric",
+    "attribute": "collection",
+    "catalogStatus": "verified",
+    "storedValue": [
+     "flanges-and-bottles"
+    ],
+    "evidence": [
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/classic-electric/sonata-smart-double-electric-breast-pump",
+      "quote": "1 x Double pumping kit",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/classic-electric/sonata-smart-double-electric-breast-pump",
+      "quote": "4 x 5oz. storage bottles with lids",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live 'What's included': '1 x Double pumping kit', breast shields, '4 x 5oz. storage bottles with lids'.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "T03",
+    "set": "targeted",
+    "productId": "spectra-s1-plus",
+    "brand": "Spectra",
+    "model": "S1 Plus",
+    "attribute": "closedSystem",
+    "catalogStatus": "verified",
+    "storedValue": true,
+    "evidence": [
+     {
+      "url": "https://www.spectrababyusa.com/products/spectra-s1-plus-premier-rechargeable-double-electric-breast-pump",
+      "quote": "Closed System",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://www.spectrababyusa.com/products/spectra-s1-plus-premier-rechargeable-double-electric-breast-pump",
+      "quote": "Prevents backflow into tubing or pump.",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live S1 Plus feature block: 'Closed System / Prevents backflow into tubing or pump.' on its own page; the old false-unknown note is gone.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "T04",
+    "set": "targeted",
+    "productId": "spectra-synergy-gold",
+    "brand": "Spectra",
+    "model": "Synergy Gold (SG)",
+    "attribute": "closedSystem",
+    "catalogStatus": "inferred",
+    "storedValue": true,
+    "evidence": [
+     {
+      "url": "https://www.spectrababyusa.com/products/spectra-sg-synergy-gold-double-adjustable-electric-breast-pump",
+      "quote": "Backflow protection to prevent contamination",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Correctly inferred, not verified. Live SG page: own feature list says 'Backflow protection to prevent contamination'; the explicit 'Closed System' block follows the line 'The Spectra SG Portable uses independent adjustability...', exactly as the rationale states.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "T05",
+    "set": "targeted",
+    "productId": "momcozy-v3",
+    "brand": "Momcozy",
+    "model": "V3 Double Electric",
+    "attribute": "collection",
+    "catalogStatus": "verified",
+    "storedValue": [
+     "external-unit-with-in-bra-cups"
+    ],
+    "evidence": [
+     {
+      "url": "https://momcozy.com/products/v3-double-electric-breast-pump",
+      "quote": "the Momcozy V3 is a corded, plug-in tabletop breast pump",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://momcozy.com/products/v3-double-electric-breast-pump",
+      "quote": "3-part wearable collectors simplify setup and cleanup",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live FAQ: 'corded, plug-in tabletop breast pump' (external unit) and '3-part wearable collectors' (in-bra cups) on the V3's own page.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "T06",
+    "set": "targeted",
+    "productId": "medela-symphony-plus",
+    "brand": "Medela",
+    "model": "Symphony PLUS",
+    "attribute": "multiUser",
+    "catalogStatus": "verified",
+    "storedValue": true,
+    "evidence": [
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/symphony-and-sets/symphony-plus-breast-pump",
+      "quote": "Discover the Symphony PLUS® breast pump: hospital-grade, multi-user",
+      "scope": "this-product",
+      "section": "page-metadata",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live meta description supports it, and the live body now also states 'Symphony PLUS ® is a hospital-grade (multi-user) breast pump'. Recommend re-citing the body line instead of page metadata.",
+    "notes": {
+     "freshness": "Body copy now carries the claim; catalog still cites metadata."
+    },
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "review"
+    }
+   },
+   {
+    "id": "T07",
+    "set": "targeted",
+    "productId": "willow-360",
+    "brand": "Willow",
+    "model": "Willow 360",
+    "attribute": "batterySessions",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 5,
+     "unit": "sessions",
+     "comparator": "up-to"
+    },
+    "evidence": [
+     {
+      "url": "https://onewillow.com/products/willow-pump-360",
+      "quote": "Rechargeable battery that lasts up to 5 pumping sessions",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live feature list: 'Rechargeable battery that lasts up to 5 pumping sessions'; sessions kept separate from minutes.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "T08",
+    "set": "targeted",
+    "productId": "medela-pump-in-style-pro",
+    "brand": "Medela",
+    "model": "Pump In Style Pro",
+    "attribute": "handsFree",
+    "catalogStatus": "verified",
+    "storedValue": "with-accessories",
+    "evidence": [
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/classic-electric/pump-in-style-pro-double-electric-breast-pump",
+      "quote": "If you would like to pump hands-free, you can purchase Medela Hands-free collection cups separately.",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live FAQ under accessories: hands-free cups 'purchase ... separately'; box list has no hands-free cups or bra.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "T09",
+    "set": "targeted",
+    "productId": "spectra-s2-plus",
+    "brand": "Spectra",
+    "model": "S2 Plus",
+    "attribute": "powerSources",
+    "catalogStatus": "inferred",
+    "storedValue": [
+     "mains"
+    ],
+    "evidence": [
+     {
+      "url": "https://www.spectrababyusa.com/products/spectra-s2-plus-premier-double-electric-breast-pump",
+      "quote": "One (1) Spectra 12V AC Power Adapter/Charger",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Inferred, and labelled so. Live page: adapter is the only power item; no battery, plug or outlet wording anywhere in the product region.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "T10",
+    "set": "targeted",
+    "productId": "momcozy-m5-smart",
+    "brand": "Momcozy",
+    "model": "M5 Smart",
+    "attribute": "weight",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 230,
+     "unit": "g",
+     "comparator": "eq",
+     "scope": "unspecified"
+    },
+    "evidence": [
+     {
+      "url": "https://momcozy.com/products/m5-smart-wearable-breast-pump-upgraded-with-app-control",
+      "quote": "Weight: 230 g",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live spec block 'Weight: 230 g' with no statement of what was weighed; scope 'unspecified' is faithful.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R01",
+    "set": "random",
+    "productId": "ameda-glo",
+    "brand": "Ameda",
+    "model": "GLO Wearable",
+    "attribute": "collection",
+    "catalogStatus": "verified",
+    "storedValue": [
+     "in-bra-wearable"
+    ],
+    "evidence": [
+     {
+      "url": "https://www.ameda.com/products/glo-wearable-breast-pump",
+      "quote": "GLO® Wearable Breast Pump",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "NEEDS REVIEW",
+    "reason": "Value is right (live page: 'place the collection cups inside your bra'; box: '2 motors, 2 cups'), but the cited evidence is only the product name 'GLO® Wearable Breast Pump', which does not establish 'self-contained, no external unit'.",
+    "notes": {
+     "interpretation": "evidence insufficient for the definition"
+    },
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "review",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R02",
+    "set": "random",
+    "productId": "ameda-pearl",
+    "brand": "Ameda",
+    "model": "Pearl",
+    "attribute": "maxSuction",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 250,
+     "unit": "mmHg",
+     "comparator": "up-to"
+    },
+    "evidence": [
+     {
+      "url": "https://www.ameda.com/products/ameda-pearl-hospital-grade-breast-pump",
+      "quote": "Expression: 30 - 250mmHg; 12 user-selectable settings",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live 'Technical Features': 'Expression: 30 - 250mmHg'; range top stored as up-to 250.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R03",
+    "set": "random",
+    "productId": "babybuddha-3",
+    "brand": "BabyBuddha",
+    "model": "BabyBuddha 3.0",
+    "attribute": "suctionLevels",
+    "catalogStatus": "verified",
+    "storedValue": "Soft Stimulation 6, Classic Expression 9, Double Drop Expression 9 levels",
+    "evidence": [
+     {
+      "url": "https://babybuddhaproducts.com/products/buddha-3-0",
+      "quote": "Soft Stimulation with 6 levels",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://babybuddhaproducts.com/products/buddha-3-0",
+      "quote": "Classic Expression with 9 levels",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://babybuddhaproducts.com/products/buddha-3-0",
+      "quote": "Double Drop Expression with 9 levels",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "FAIL",
+    "reason": "Live page: 'Choose from four pumping modes and 30 total settings' followed by four lines; the stored value lists only three modes and omits 'Classic Stimulation with 6 levels'. Quotes are accurate, but the value is incomplete in a way that misstates the mode count.",
+    "notes": {
+     "interpretation": "incomplete enumeration"
+    },
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "fail",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R04",
+    "set": "random",
+    "productId": "babybuddha-manual",
+    "brand": "BabyBuddha",
+    "model": "Manual Breast Pump",
+    "attribute": "capacity",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 4.7,
+     "unit": "oz",
+     "comparator": "eq"
+    },
+    "evidence": [
+     {
+      "url": "https://babybuddhaproducts.com/products/babybuddha-manual-breast-pump",
+      "quote": "1 Wide-Neck Bottle (4.7 Ounces)",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live 'What's in the Box': '1 Wide-Neck Bottle (4.7 Ounces)'.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R05",
+    "set": "random",
+    "productId": "elvie-pump",
+    "brand": "Elvie",
+    "model": "Elvie Pump",
+    "attribute": "batterySessions",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 6,
+     "unit": "sessions",
+     "comparator": "up-to"
+    },
+    "evidence": [
+     {
+      "url": "https://onewillow.com/products/elvie-pump-ultra-quiet-ultra-discreet-wearable-breast-pump",
+      "quote": "Rechargeable battery lasts 5-6 pumping sessions and charges in two hours.",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live page: 'lasts 5-6 pumping sessions'; range stored as up-to 6 per DATA.md. The page sells Single and Double configurations under one record; sessions are per pump either way.",
+    "notes": {
+     "variant": "single/double configurations share one record"
+    },
+    "criteria": {
+     "modelVariantMatch": "review",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R06",
+    "set": "random",
+    "productId": "evenflo-pocket-double-electric",
+    "brand": "Evenflo",
+    "model": "Pocket Portable Double Electric",
+    "attribute": "portability",
+    "catalogStatus": "verified",
+    "storedValue": [
+     "pocket-or-bag-sized",
+     "clip-or-lanyard"
+    ],
+    "evidence": [
+     {
+      "url": "https://www.evenflofeeding.com/products/pocket-double-electric-breast-pump",
+      "quote": "The new, full-time use breast pump fits in any bag and clips to your waistband.",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live: 'fits in any bag and clips to your waistband' under 'Compact and Portable'.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R07",
+    "set": "random",
+    "productId": "lansinoh-thrive-2-in-1",
+    "brand": "Lansinoh",
+    "model": "Thrive 2-in-1",
+    "attribute": "capacity",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 6,
+     "unit": "oz",
+     "comparator": "eq"
+    },
+    "evidence": [
+     {
+      "url": "https://lansinoh.com/products/lansinoh-thrive-pump",
+      "quote": "2 Hands-free collection cups (6 oz)",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "NEEDS REVIEW",
+    "reason": "'2 Hands-free collection cups (6 oz)' is accurate, but the box also contains a PowerPump kit with 5 oz bottles. A single product-level capacity of 6 oz has no component scope.",
+    "notes": {
+     "scope": "applies to hands-free cups only"
+    },
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "review",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R08",
+    "set": "random",
+    "productId": "lansinoh-discreetduo-flow",
+    "brand": "Lansinoh",
+    "model": "DiscreetDuo Flow",
+    "attribute": "collection",
+    "catalogStatus": "verified",
+    "storedValue": [
+     "in-bra-wearable"
+    ],
+    "evidence": [
+     {
+      "url": "https://lansinoh.com/products/discreetduo-flow-wearable-breast-pump",
+      "quote": "DiscreetDuo™ Flow Wearable Breast Pump",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://lansinoh.com/products/discreetduo-flow-wearable-breast-pump",
+      "quote": "Place in bra and center nipple inside the flange tunnel before turning on.",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live description: 'hands-free breastfeeding pump with no cords or tubes'; instructions: 'Place in bra'. Supports a self-contained in-bra unit.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R09",
+    "set": "random",
+    "productId": "lansinoh-signature-comfort",
+    "brand": "Lansinoh",
+    "model": "Signature Comfort",
+    "attribute": "dishwasherSafe",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "parts": "some",
+     "topRackOnly": null
+    },
+    "evidence": [
+     {
+      "url": "https://lansinoh.com/products/signature-comfort-breast-pump",
+      "quote": "dishwasher-safe breastmilk expression set parts",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live: 'dishwasher-safe breastmilk expression set parts'; parts='some' is correctly scoped.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R10",
+    "set": "random",
+    "productId": "medela-pump-in-style-pro-plus-hands-free",
+    "brand": "Medela",
+    "model": "Pump In Style Pro+ Hands-free Rechargeable",
+    "attribute": "includedItems",
+    "catalogStatus": "verified",
+    "storedValue": [
+     "1 x Pump In Style Pro+ breast pump",
+     "2 x Hands-free collection cups",
+     "2 x 24 mm breast shields with o-ring",
+     "2 x 21 mm breast shields with o-ring",
+     "1 x tubing",
+     "1 x power adaptor"
+    ],
+    "evidence": [
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/hands-free-electric/pump-in-style-pro-hands-free-rechargeable-breast-pump",
+      "quote": "1 x Pump In Style Pro+ breast pump",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/hands-free-electric/pump-in-style-pro-hands-free-rechargeable-breast-pump",
+      "quote": "2 x Hands-free collection cups",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/hands-free-electric/pump-in-style-pro-hands-free-rechargeable-breast-pump",
+      "quote": "2 x 24 mm breast shields with o-ring",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/hands-free-electric/pump-in-style-pro-hands-free-rechargeable-breast-pump",
+      "quote": "2 x 21 mm breast shields with o-ring",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/hands-free-electric/pump-in-style-pro-hands-free-rechargeable-breast-pump",
+      "quote": "1 x tubing",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/hands-free-electric/pump-in-style-pro-hands-free-rechargeable-breast-pump",
+      "quote": "1 x power adaptor",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "All six items present verbatim in the live 'What's included' list, in order.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R11",
+    "set": "random",
+    "productId": "medela-freestyle-mini-hands-free",
+    "brand": "Medela",
+    "model": "Freestyle Mini Hands-free",
+    "attribute": "portability",
+    "catalogStatus": "verified",
+    "storedValue": [
+     "clip-or-lanyard"
+    ],
+    "evidence": [
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/hands-free-electric/freestyle-mini-hands-free-double-electric-breast-pump",
+      "quote": "Adjustable lanyard with clip-on feature (1x)",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live box list: 'Adjustable lanyard with clip-on feature (1x)'.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R12",
+    "set": "random",
+    "productId": "medela-sonata",
+    "brand": "Medela",
+    "model": "Sonata Smart Double Electric",
+    "attribute": "closedSystem",
+    "catalogStatus": "verified",
+    "storedValue": true,
+    "evidence": [
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/classic-electric/sonata-smart-double-electric-breast-pump",
+      "quote": "Closed system at the kit prevents milk from entering the tubing & motor.",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live 'Overflow Protection': 'Closed system at the kit prevents milk from entering the tubing & motor.'",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R13",
+    "set": "random",
+    "productId": "medela-motion-inbra",
+    "brand": "Medela",
+    "model": "Motion InBra",
+    "attribute": "batteryLife",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 150,
+     "unit": "min",
+     "comparator": "up-to"
+    },
+    "evidence": [
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/inbra-electric/motion-inbra",
+      "quote": "battery lasts up to 2.5hr of pumping on single full charge, or up to 10 pumping sessions.",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live FAQ: 'lasts up to 2.5hr ... or up to 10 pumping sessions', with Medela's own note that a session averages 15 min.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R14",
+    "set": "random",
+    "productId": "medela-pump-in-style-pro-plus-traditional",
+    "brand": "Medela",
+    "model": "Pump In Style Pro+ Traditional Rechargeable",
+    "attribute": "suctionLevels",
+    "catalogStatus": "verified",
+    "storedValue": "16 adjustable suction levels",
+    "evidence": [
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/classic-electric/pump-in-style-pro-traditional-rechargeable-electric-breast-pump",
+      "quote": "With 16 adjustable suction levels",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live feature bullet: 'With 16 adjustable suction levels'. Same page states 'Under-2-pound' design, but catalog weight is unknown (missed attribute, see N-04).",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R15",
+    "set": "random",
+    "productId": "medela-pump-in-style-hands-free",
+    "brand": "Medela",
+    "model": "Pump In Style Hands-free",
+    "attribute": "weight",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 535,
+     "unit": "g",
+     "comparator": "eq",
+     "scope": "motor"
+    },
+    "evidence": [
+     {
+      "url": "https://www.medela.com/en-us/breastfeeding-pumping/products/pumps/hands-free-electric/pump-in-style-hands-free-double-electric-breast-pump",
+      "quote": "Unit weight: 1.18 lbs / 535g (breast pump only)",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live: 'Unit weight: 1.18 lbs / 535g (breast pump only)'; scope 'motor' is supported. The cups are listed separately at 77 g each.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R16",
+    "set": "random",
+    "productId": "momcozy-m6-mobile-style",
+    "brand": "Momcozy",
+    "model": "M6 Mobile Style",
+    "attribute": "noise",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 50,
+     "unit": "dB",
+     "comparator": "lt"
+    },
+    "evidence": [
+     {
+      "url": "https://momcozy.com/products/momcozy-mobile-style-hands-free-breast-pump",
+      "quote": "Noise Level: Less than 50 dB",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live spec block: 'Noise Level: Less than 50 dB'; comparator lt.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R17",
+    "set": "random",
+    "productId": "momcozy-v2-pro",
+    "brand": "Momcozy",
+    "model": "V2 Pro",
+    "attribute": "maxSuction",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 288,
+     "unit": "mmHg",
+     "comparator": "eq"
+    },
+    "evidence": [
+     {
+      "url": "https://momcozy.com/products/v2pro-hands-free-breast-pump-ultra-light-potent",
+      "quote": "-288mmHg Suction Power",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live: '-288mmHg Suction Power'; stored as magnitude, eq.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R18",
+    "set": "random",
+    "productId": "momcozy-s12-pro-quick",
+    "brand": "Momcozy",
+    "model": "S12 Pro Quick",
+    "attribute": "collection",
+    "catalogStatus": "verified",
+    "storedValue": [
+     "in-bra-wearable"
+    ],
+    "evidence": [
+     {
+      "url": "https://momcozy.com/products/s12-pro-quick-wearable-breast-pump",
+      "quote": "S12 Pro Quick Wearable Breast Pump",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "NEEDS REVIEW",
+    "reason": "Only evidence is the product name 'S12 Pro Quick Wearable Breast Pump'. No brand-voice line on the live page says in-bra or self-contained (only a customer review mentions 'cordless'). Classification 'wearable' depends on it.",
+    "notes": {
+     "interpretation": "name-only evidence"
+    },
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "review",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R19",
+    "set": "random",
+    "productId": "momcozy-m5-smart",
+    "brand": "Momcozy",
+    "model": "M5 Smart",
+    "attribute": "suctionLevels",
+    "catalogStatus": "verified",
+    "storedValue": "3 modes, 9 suction levels",
+    "evidence": [
+     {
+      "url": "https://momcozy.com/products/m5-smart-wearable-breast-pump-upgraded-with-app-control",
+      "quote": "Pumping Modes: 3 (Stimulation, Expression, Mixed)",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://momcozy.com/products/m5-smart-wearable-breast-pump-upgraded-with-app-control",
+      "quote": "Suction Levels: 9",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live spec block: 'Pumping Modes: 3' and 'Suction Levels: 9'.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R20",
+    "set": "random",
+    "productId": "motif-duo",
+    "brand": "Motif",
+    "model": "Duo",
+    "attribute": "pumping",
+    "catalogStatus": "verified",
+    "storedValue": "double",
+    "evidence": [
+     {
+      "url": "https://motifmedical.com/duo-portable-breast-pump",
+      "quote": "This double electric breast pump weighs less than a pound",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live description: 'This double electric breast pump weighs less than a pound'.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R21",
+    "set": "random",
+    "productId": "motif-roam",
+    "brand": "Motif",
+    "model": "Roam",
+    "attribute": "closedSystem",
+    "catalogStatus": "verified",
+    "storedValue": true,
+    "evidence": [
+     {
+      "url": "https://motifmedical.com/motif-roam",
+      "quote": "and a hygienic closed system",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live description: 'a hygienic closed system'.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R22",
+    "set": "random",
+    "productId": "motif-roam",
+    "brand": "Motif",
+    "model": "Roam",
+    "attribute": "noise",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 55,
+     "unit": "dB",
+     "comparator": "lt"
+    },
+    "evidence": [
+     {
+      "url": "https://motifmedical.com/motif-roam",
+      "quote": "A quiet <55-decibel hum",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live: 'QUIET MOTOR / A quiet <55-decibel hum'; comparator lt.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R23",
+    "set": "random",
+    "productId": "spectra-s2-plus",
+    "brand": "Spectra",
+    "model": "S2 Plus",
+    "attribute": "closedSystem",
+    "catalogStatus": "verified",
+    "storedValue": true,
+    "evidence": [
+     {
+      "url": "https://www.spectrababyusa.com/products/spectra-s2-plus-premier-double-electric-breast-pump",
+      "quote": "Closed System",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://www.spectrababyusa.com/products/spectra-s2-plus-premier-double-electric-breast-pump",
+      "quote": "Prevents backflow into tubing or pump.",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live feature block: 'Closed System / Prevents backflow into tubing or pump.' on the S2 Plus's own page (confirms the I-08 correction).",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R24",
+    "set": "random",
+    "productId": "spectra-premier-wearable",
+    "brand": "Spectra",
+    "model": "Premier Wearable",
+    "attribute": "maxSuction",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 280,
+     "unit": "mmHg",
+     "comparator": "eq"
+    },
+    "evidence": [
+     {
+      "url": "https://www.spectrababyusa.com/products/premier-wearable-breast-pump",
+      "quote": "Hospital-Strength: 280mmHg adjustable suction",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live spec list: 'Hospital-Strength: 280mmHg adjustable suction'; plain number, eq.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R25",
+    "set": "random",
+    "productId": "spectra-s3-pro",
+    "brand": "Spectra",
+    "model": "S3 Pro Multi-user",
+    "attribute": "closedSystem",
+    "catalogStatus": "verified",
+    "storedValue": true,
+    "evidence": [
+     {
+      "url": "https://www.spectrababyusa.com/products/s3-pro-multiuser-hospital-grade-breast-pump",
+      "quote": "Engineered with a true closed system",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live description: 'Engineered with a true closed system'.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R26",
+    "set": "random",
+    "productId": "willow-wave",
+    "brand": "Willow",
+    "model": "Wave Manual",
+    "attribute": "includedItems",
+    "catalogStatus": "verified",
+    "storedValue": [
+     "Flange",
+     "Container Back",
+     "Gasket",
+     "Valve",
+     "Container Bowl",
+     "Handle",
+     "Tubing"
+    ],
+    "evidence": [
+     {
+      "url": "https://onewillow.com/products/willow-wave-manual-breast-pump",
+      "quote": "Flange",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://onewillow.com/products/willow-wave-manual-breast-pump",
+      "quote": "Container Back",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://onewillow.com/products/willow-wave-manual-breast-pump",
+      "quote": "Gasket",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://onewillow.com/products/willow-wave-manual-breast-pump",
+      "quote": "Valve",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://onewillow.com/products/willow-wave-manual-breast-pump",
+      "quote": "Container Bowl",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://onewillow.com/products/willow-wave-manual-breast-pump",
+      "quote": "Handle",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     },
+     {
+      "url": "https://onewillow.com/products/willow-wave-manual-breast-pump",
+      "quote": "Tubing",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "All 7 items present verbatim in the live 'What's Included' list.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R27",
+    "set": "random",
+    "productId": "willow-360",
+    "brand": "Willow",
+    "model": "Willow 360",
+    "attribute": "maxSuction",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 245,
+     "unit": "mmHg",
+     "comparator": "up-to"
+    },
+    "evidence": [
+     {
+      "url": "https://onewillow.com/products/willow-pump-360",
+      "quote": "7 levels of smart, hospital-grade suction (up to -245mmHG)",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live: '7 levels of smart, hospital-grade suction (up to -245mmHG)'.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R28",
+    "set": "random",
+    "productId": "zomee-z2",
+    "brand": "Zomee",
+    "model": "Z2",
+    "attribute": "closedSystem",
+    "catalogStatus": "verified",
+    "storedValue": true,
+    "evidence": [
+     {
+      "url": "https://zomee.com/products/zomee-z2-double-electric-breast-pump",
+      "quote": "Closed system prevents milk from entering tubing for hygienic use",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live feature list on the Z2's own page: 'Closed system prevents milk from entering tubing'.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R29",
+    "set": "random",
+    "productId": "zomee-mothers-nature-w1",
+    "brand": "Zomee",
+    "model": "Mother's Nature W1 Warming Wearable",
+    "attribute": "handsFree",
+    "catalogStatus": "verified",
+    "storedValue": "as-sold",
+    "evidence": [
+     {
+      "url": "https://zomee.com/products/mothers-nature-w1-warming-wearable-breast-pump",
+      "quote": "Compact, lightweight and hands-free design fits discreetly in your bra",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live: 'hands-free design fits discreetly in your bra'; self-contained wearable, so as-sold.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   },
+   {
+    "id": "R30",
+    "set": "random",
+    "productId": "eufy-s2-pro",
+    "brand": "eufy",
+    "model": "Wearable Breast Pump S2 Pro",
+    "attribute": "maxSuction",
+    "catalogStatus": "verified",
+    "storedValue": {
+     "amount": 300,
+     "unit": "mmHg",
+     "comparator": "eq"
+    },
+    "evidence": [
+     {
+      "url": "https://www.eufy.com/products/t600p181-eufy-wearable-breast-pump-s2-pro",
+      "quote": "360° wrap-around warmth and 300 mmHg suction",
+      "scope": "this-product",
+      "section": "product-content",
+      "accessedOn": "2026-10-28"
+     }
+    ],
+    "liveCheckedOn": "2026-11-10",
+    "quoteInLiveProductRegion": true,
+    "verdict": "PASS",
+    "reason": "Live feature bullet on the S2 Pro page: '... and 300 mmHg suction'; plain number, eq. Marketing context, not a spec table.",
+    "notes": {},
+    "criteria": {
+     "modelVariantMatch": "pass",
+     "sourceAuthenticity": "pass",
+     "quotationAccuracy": "pass",
+     "interpretation": "pass",
+     "unitsAndQualifiers": "pass",
+     "evidenceScope": "pass",
+     "sourceFreshness": "pass"
+    }
+   }
+  ],
+  "criteriaLegend": {
+   "modelVariantMatch": "quote is on the exact model/variant page and describes it",
+   "sourceAuthenticity": "official US manufacturer host over https",
+   "quotationAccuracy": "quote present verbatim in the live product region (re-fetched 2026-11-10/11)",
+   "interpretation": "quote supports the stored value under docs/DATA.md definitions",
+   "unitsAndQualifiers": "unit and comparator match the source",
+   "evidenceScope": "value applies to the component/configuration the record implies",
+   "sourceFreshness": "catalog accessedOn 2026-10-28; live page unchanged for this quote and no better evidence superseding it"
+  }
+ },
+ "coverage": {
+  "attributeCoverage": {
+   "collection": {
+    "verified": 64,
+    "inferred": 6,
+    "conflicting": 0,
+    "unknown": 4
+   },
+   "pumping": {
+    "verified": 36,
+    "inferred": 0,
+    "conflicting": 0,
+    "unknown": 38
+   },
+   "powerSources": {
+    "verified": 53,
+    "inferred": 15,
+    "conflicting": 0,
+    "unknown": 6
+   },
+   "batteryLife": {
+    "verified": 22,
+    "inferred": 0,
+    "conflicting": 2,
+    "unknown": 50
+   },
+   "batterySessions": {
+    "verified": 20,
+    "inferred": 0,
+    "conflicting": 0,
+    "unknown": 54
+   },
+   "portability": {
+    "verified": 17,
+    "inferred": 0,
+    "conflicting": 0,
+    "unknown": 57
+   },
+   "weight": {
+    "verified": 23,
+    "inferred": 1,
+    "conflicting": 0,
+    "unknown": 50
+   },
+   "handsFree": {
+    "verified": 36,
+    "inferred": 10,
+    "conflicting": 0,
+    "unknown": 28
+   },
+   "dishwasherSafe": {
+    "verified": 24,
+    "inferred": 0,
+    "conflicting": 0,
+    "unknown": 50
+   },
+   "cleaning": {
+    "verified": 25,
+    "inferred": 0,
+    "conflicting": 1,
+    "unknown": 48
+   },
+   "noise": {
+    "verified": 21,
+    "inferred": 0,
+    "conflicting": 1,
+    "unknown": 52
+   },
+   "maxSuction": {
+    "verified": 39,
+    "inferred": 0,
+    "conflicting": 1,
+    "unknown": 34
+   },
+   "suctionLevels": {
+    "verified": 45,
+    "inferred": 0,
+    "conflicting": 0,
+    "unknown": 29
+   }
+  },
+  "dimensionCoverage": {
+   "architecture": {
+    "V": 33,
+    "I": 40,
+    "U": 1
+   },
+   "batteryPower": {
+    "partial": 19,
+    "U": 6,
+    "I": 11,
+    "V": 36,
+    "C": 2
+   },
+   "weight": {
+    "U": 50,
+    "V": 23,
+    "I": 1
+   },
+   "handsFree": {
+    "U": 28,
+    "V": 36,
+    "I": 10
+   },
+   "cleaning": {
+    "U": 39,
+    "V": 35
+   },
+   "noise": {
+    "U": 52,
+    "V": 21,
+    "C": 1
+   },
+   "suction": {
+    "U": 34,
+    "V": 39,
+    "C": 1
+   }
+  },
+  "products": [
+   {
+    "productId": "evenflo-advanced-double-electric",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 1,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "evenflo-advanced-manual",
+    "category": "manual",
+    "dimensionsCovered": 1,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "U",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "evenflo-advanced-single-electric",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 1,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "evenflo-deluxe-advanced-double-electric",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 1,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "evenflo-pocket-double-electric",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 1,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "spectra-synergy-gold-portable",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 1,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "ameda-one-hand-manual",
+    "category": "manual",
+    "dimensionsCovered": 2,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "I",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "babybuddha-3",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 2,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "babybuddha-manual",
+    "category": "manual",
+    "dimensionsCovered": 2,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "U",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "lansinoh-naturalwave",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 2,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "lansinoh-smartpump-3",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 2,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-pump-in-style-pro-plus-traditional",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 2,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-symphony-plus",
+    "category": "multi-user",
+    "dimensionsCovered": 2,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "U",
+     "weight": "V",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "spectra-s3-pro",
+    "category": "multi-user",
+    "dimensionsCovered": 2,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "ameda-mya-joy",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "ameda-platinum",
+    "category": "multi-user",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "babybuddha-wearable",
+    "category": "wearable",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "elvie-curve",
+    "category": "manual",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "I",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "lansinoh-manual",
+    "category": "manual",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "I",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-harmony",
+    "category": "manual",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "momcozy-air-1",
+    "category": "wearable",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "momcozy-s9-pro",
+    "category": "wearable",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "C",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "momcozy-v2-pro",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "U",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "motif-manual-silicone",
+    "category": "manual",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "motif-twist",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "partial",
+     "weight": "V",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "spectra-9-plus",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "partial",
+     "weight": "V",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "spectra-handy-plus",
+    "category": "manual",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "I",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "spectra-s1-plus",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "partial",
+     "weight": "V",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "spectra-synergy-gold",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "I",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "willow-silicone-wearable",
+    "category": "manual",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "I",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "willow-wave",
+    "category": "manual",
+    "dimensionsCovered": 3,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "ameda-mya-joy-plus",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "ameda-pearl",
+    "category": "multi-user",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "V",
+     "weight": "I",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "lansinoh-signature-comfort",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "lansinoh-silicone",
+    "category": "manual",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "I",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-freestyle-mini-hands-free",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-motion-inbra",
+    "category": "wearable",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "I",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-pump-in-style-hands-free",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "partial",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-pump-in-style-pro-plus-hands-free",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "partial",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "momcozy-v1-pro",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "momcozy-wellness-1",
+    "category": "wearable",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "I",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "spectra-premier-wearable",
+    "category": "wearable",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "I",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "spectra-s2-plus",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "I",
+     "weight": "V",
+     "handsFree": "U",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "zomee-z2",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 4,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "ameda-glo",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "eufy-s2",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "U",
+     "weight": "U",
+     "handsFree": "I",
+     "cleaning": "V",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "eufy-s2-pro",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "U",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "lansinoh-discreetduo-flow",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "lansinoh-thrive-2-in-1",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "partial",
+     "weight": "U",
+     "handsFree": "I",
+     "cleaning": "V",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "lansinoh-wearable",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "medela-freestyle-hands-free",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-magic-inbra",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "I",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-melody-inbra",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "I",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "medela-pump-in-style-pro",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "I",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-sonata",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "medela-swing-maxi-hands-free",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "momcozy-m6-mobile-style",
+    "category": "unclassified",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "U",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "V",
+     "suction": "C"
+    }
+   },
+   {
+    "productId": "momcozy-s12-pro-quick",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "I",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "motif-duo",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "motif-luna-with-battery",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "C",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "willow-360",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "willow-go",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "willow-sync",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "zomee-mothers-nature-h1",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "I",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "zomee-mothers-nature-w1",
+    "category": "wearable",
+    "dimensionsCovered": 5,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "elvie-pump",
+    "category": "wearable",
+    "dimensionsCovered": 6,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "I",
+     "cleaning": "V",
+     "noise": "V",
+     "suction": "U"
+    }
+   },
+   {
+    "productId": "elvie-stride",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 6,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "momcozy-m9-mobile-flow",
+    "category": "wearable",
+    "dimensionsCovered": 6,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "momcozy-v3",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 6,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "U",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "motif-aura-glow",
+    "category": "wearable",
+    "dimensionsCovered": 6,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "I",
+     "cleaning": "V",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "motif-luna",
+    "category": "flange-bottle-electric",
+    "dimensionsCovered": 6,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "I",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "U",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "motif-roam",
+    "category": "hands-free-electric",
+    "dimensionsCovered": 6,
+    "dimensions": {
+     "architecture": "V",
+     "batteryPower": "C",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "zomee-fit",
+    "category": "wearable",
+    "dimensionsCovered": 6,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "U",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "V",
+     "suction": "V"
+    }
+   },
+   {
+    "productId": "momcozy-m5-smart",
+    "category": "wearable",
+    "dimensionsCovered": 7,
+    "dimensions": {
+     "architecture": "I",
+     "batteryPower": "V",
+     "weight": "V",
+     "handsFree": "V",
+     "cleaning": "V",
+     "noise": "V",
+     "suction": "V"
+    }
+   }
+  ]
+ },
+ "grounding": {
+  "claudeIntegrationPresent": false,
+  "modelBehaviorTested": false,
+  "payloadChecks": {
+   "total": 54,
+   "passed": 43
+  },
+  "cases": [
+   {
+    "id": "G01",
+    "category": "missing-spec",
+    "question": "Which is quieter, the Spectra S1 Plus or the S2 Plus?",
+    "productIds": [
+     "spectra-s1-plus",
+     "spectra-s2-plus"
+    ],
+    "checks": [
+     {
+      "desc": "noise is unknown for both",
+      "pass": true
+     },
+     {
+      "desc": "no dB figure anywhere in either product's values",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "States noise is not published/verified for either model",
+     "Does not rank by noise",
+     "Does not cite third-party or remembered dB values"
+    ]
+   },
+   {
+    "id": "G02",
+    "category": "missing-spec",
+    "question": "Which is lighter, the Willow Go or the Momcozy M9?",
+    "productIds": [
+     "willow-go",
+     "momcozy-m9-mobile-flow"
+    ],
+    "checks": [
+     {
+      "desc": "Willow Go weight unknown",
+      "pass": true
+     },
+     {
+      "desc": "M9 weight carries scope 'unspecified'",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says Willow Go weight is not verified",
+     "Gives M9 weight as 302 g without saying per-unit or pair",
+     "Does not conclude which is lighter"
+    ]
+   },
+   {
+    "id": "G03",
+    "category": "missing-spec",
+    "question": "Compare battery life of Evenflo Advanced Double vs Deluxe Advanced Double.",
+    "productIds": [
+     "evenflo-advanced-double-electric",
+     "evenflo-deluxe-advanced-double-electric"
+    ],
+    "checks": [
+     {
+      "desc": "batteryLife unknown for both",
+      "pass": true
+     },
+     {
+      "desc": "payload discloses that the two records have identical established facts (no differentiator)",
+      "pass": false,
+      "detail": "Payload has no field explaining that the two pages share identical copy; DATA.md documents it but grounding does not."
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says battery life is not verified for either",
+     "Says catalog cannot distinguish the two models from manufacturer data"
+    ],
+    "payloadFinding": "Identical-copy sibling records are not flagged in the payload."
+   },
+   {
+    "id": "G04",
+    "category": "conflict",
+    "question": "How long does the Motif Roam battery last?",
+    "productIds": [
+     "motif-roam"
+    ],
+    "checks": [
+     {
+      "desc": "batteryLife is in conflicting, not verified/inferred",
+      "pass": true
+     },
+     {
+      "desc": "both candidates (90, 120) present with citations",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Reports both manufacturer figures and that they conflict",
+     "Does not pick or average"
+    ]
+   },
+   {
+    "id": "G05",
+    "category": "conflict",
+    "question": "Is the Momcozy S9 Pro quieter than the Momcozy M5 Smart?",
+    "productIds": [
+     "momcozy-s9-pro",
+     "momcozy-m5-smart"
+    ],
+    "checks": [
+     {
+      "desc": "S9 Pro noise conflicting",
+      "pass": true
+     },
+     {
+      "desc": "M5 noise verified lt 48 dB",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says S9 Pro noise is conflicting (<45 dB vs 50 dB)",
+     "Does not declare a winner"
+    ]
+   },
+   {
+    "id": "G06",
+    "category": "conflict",
+    "question": "How big are the NaturalWave bottles in ml?",
+    "productIds": [
+     "lansinoh-naturalwave"
+    ],
+    "checks": [
+     {
+      "desc": "capacity conflicting",
+      "pass": true
+     },
+     {
+      "desc": "note explains unit disagreement",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says the source lists '5 oz/60 ml', which is inconsistent",
+     "Does not convert 5 oz to 148 ml and present it as fact"
+    ]
+   },
+   {
+    "id": "G07",
+    "category": "conflict",
+    "question": "Does the Luna with Battery last longer than the Motif Duo?",
+    "productIds": [
+     "motif-luna-with-battery",
+     "motif-duo"
+    ],
+    "checks": [
+     {
+      "desc": "Luna w/ battery batteryLife conflicting",
+      "pass": true
+     },
+     {
+      "desc": "candidate comparators faithful to quotes ('4+ hours' is a lower bound)",
+      "pass": false,
+      "detail": "Candidate 'up to 4+ hours' is stored as comparator up-to 240 min; '4+' is a lower bound, and 'over 2 hours' / '4+ hours' are compatible, so this is arguably not a contradiction."
+     }
+    ],
+    "expectedModelBehavior": [
+     "Reports manufacturer statements verbatim",
+     "Does not claim the Luna lasts at most 4 hours"
+    ],
+    "payloadFinding": "Comparator for '4+ hours' candidate is up-to; the conflict label itself is questionable."
+   },
+   {
+    "id": "G08",
+    "category": "similar-names",
+    "question": "Is the Pump In Style Pro rechargeable?",
+    "productIds": [
+     "medela-pump-in-style-pro",
+     "medela-pump-in-style-pro-plus-traditional",
+     "medela-pump-in-style-pro-plus-hands-free"
+    ],
+    "checks": [
+     {
+      "desc": "three distinct models in payload",
+      "pass": true
+     },
+     {
+      "desc": "PIS Pro power is inferred mains, Pro+ records verified battery",
+      "pass": true
+     },
+     {
+      "desc": "no PIS Pro citation quotes 'Pro+'",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says Pump In Style Pro has no battery listed (PumpPath inference: mains)",
+     "Points to Pro+ models as the rechargeable versions",
+     "Does not merge the three records"
+    ]
+   },
+   {
+    "id": "G09",
+    "category": "variant",
+    "question": "How loud is the Motif Luna?",
+    "productIds": [
+     "motif-luna",
+     "motif-luna-with-battery"
+    ],
+    "checks": [
+     {
+      "desc": "Luna <39 dB and Luna w/ battery <40 dB kept separate",
+      "pass": true
+     },
+     {
+      "desc": "payload states the variant relationship",
+      "pass": false,
+      "detail": "ProductFacts has no variantOf field; Claude sees two unrelated model names."
+     }
+    ],
+    "expectedModelBehavior": [
+     "Asks or states which variant",
+     "Gives <39 dB (non-battery) and <40 dB (battery) separately"
+    ],
+    "payloadFinding": "variantOf is not exposed to grounding."
+   },
+   {
+    "id": "G10",
+    "category": "similar-names",
+    "question": "What's the difference between the eufy S2 and S2 Pro?",
+    "productIds": [
+     "eufy-s2",
+     "eufy-s2-pro"
+    ],
+    "checks": [
+     {
+      "desc": "both have identical suction/noise/cleaning",
+      "pass": true
+     },
+     {
+      "desc": "power sources unknown for both",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says the catalog shows no verified differentiating spec",
+     "Does not invent Pro-only features"
+    ]
+   },
+   {
+    "id": "G11",
+    "category": "similar-names",
+    "question": "Does the Ameda Mya Joy have a rechargeable battery like the Mya Joy PLUS?",
+    "productIds": [
+     "ameda-mya-joy",
+     "ameda-mya-joy-plus"
+    ],
+    "checks": [
+     {
+      "desc": "Mya Joy power inferred mains+AA; PLUS verified built-in battery",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Mya Joy: AA batteries stated; mains is PumpPath interpretation",
+     "PLUS: rechargeable, up to 3 hours"
+    ]
+   },
+   {
+    "id": "G12",
+    "category": "battery-units",
+    "question": "Which lasts longer per charge: Momcozy S12 Pro Quick or Willow Go?",
+    "productIds": [
+     "momcozy-s12-pro-quick",
+     "willow-go"
+    ],
+    "checks": [
+     {
+      "desc": "Willow Go batteryLife unknown, batterySessions 8",
+      "pass": true
+     },
+     {
+      "desc": "S12 has both 240 min and 8 sessions",
+      "pass": true
+     },
+     {
+      "desc": "rules forbid converting sessions to minutes",
+      "pass": false,
+      "detail": "No grounding rule mentions sessions vs minutes."
+     }
+    ],
+    "expectedModelBehavior": [
+     "Compares sessions to sessions (both 'up to 8')",
+     "Does not convert Willow sessions to minutes"
+    ],
+    "payloadFinding": "No rule against converting sessions to minutes."
+   },
+   {
+    "id": "G13",
+    "category": "battery-units",
+    "question": "Elvie Stride vs Motif Duo battery: which is longer?",
+    "productIds": [
+     "elvie-stride",
+     "motif-duo"
+    ],
+    "checks": [
+     {
+      "desc": "Stride stored lt 180 min (\"nearly three hours\")",
+      "pass": true
+     },
+     {
+      "desc": "rules explain comparator semantics",
+      "pass": false,
+      "detail": "Rules do not tell Claude to keep comparators ('nearly', 'up to', '<')."
+     }
+    ],
+    "expectedModelBehavior": [
+     "'Nearly 3 hours' vs '2.5 hours'",
+     "Does not state Stride = 3 hours"
+    ],
+    "payloadFinding": "Comparator semantics not explained in rules."
+   },
+   {
+    "id": "G14",
+    "category": "battery-units",
+    "question": "How many hours does the Medela Freestyle Hands-free last?",
+    "productIds": [
+     "medela-freestyle-hands-free"
+    ],
+    "checks": [
+     {
+      "desc": "approximately 120 min and approximately 8 sessions",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "'About 2 hours' / 'on average eight 15-minute sessions'"
+    ]
+   },
+   {
+    "id": "G15",
+    "category": "cleaning-scope",
+    "question": "Can I put the whole Freestyle Hands-free in the dishwasher?",
+    "productIds": [
+     "medela-freestyle-hands-free"
+    ],
+    "checks": [
+     {
+      "desc": "dishwasher parts=some, topRackOnly=true",
+      "pass": true
+     },
+     {
+      "desc": "citation says cups only and excludes tubing extension",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Only the collection cups, top rack; not the tubing extension or motor"
+    ]
+   },
+   {
+    "id": "G16",
+    "category": "cleaning-scope",
+    "question": "Is the Pump In Style Pro dishwasher safe?",
+    "productIds": [
+     "medela-pump-in-style-pro"
+    ],
+    "checks": [
+     {
+      "desc": "parts recorded 'unspecified'",
+      "pass": true
+     },
+     {
+      "desc": "rules tell Claude not to generalise unspecified dishwasher scope to the whole pump",
+      "pass": false,
+      "detail": "No rule; value object {parts:'unspecified'} sits under 'verified' with no definition."
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says Medela states 'Only 4 parts to clean and dishwasher safe'",
+     "Does not say the pump/motor is dishwasher safe"
+    ],
+    "payloadFinding": "Unspecified dishwasher scope presented as a verified fact without definition."
+   },
+   {
+    "id": "G17",
+    "category": "cleaning-scope",
+    "question": "Is the Willow 360 fully dishwasher safe?",
+    "productIds": [
+     "willow-360"
+    ],
+    "checks": [
+     {
+      "desc": "parts recorded 'all'",
+      "pass": true
+     },
+     {
+      "desc": "'all' is limited to the parts to clean, not the device",
+      "pass": false,
+      "detail": "Source: 'two parts to clean ... both are dishwasher-safe'. Value 'all' reads as the whole pump; the payload carries no component scope."
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says the two parts cleaned after each session are dishwasher-safe",
+     "Does not say the pump/motor is"
+    ],
+    "payloadFinding": "parts='all' lacks component scope."
+   },
+   {
+    "id": "G18",
+    "category": "cleaning-scope",
+    "question": "Can I wash the Thrive tubing in the dishwasher?",
+    "productIds": [
+     "lansinoh-thrive-2-in-1"
+    ],
+    "checks": [
+     {
+      "desc": "parts=some with exclusion quote",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "No — do not wash tubing; cups and PowerPump kit are dishwasher safe"
+    ]
+   },
+   {
+    "id": "G19",
+    "category": "noise",
+    "question": "Is the Elvie Pump quieter than the Willow Go?",
+    "productIds": [
+     "elvie-pump",
+     "willow-go"
+    ],
+    "checks": [
+     {
+      "desc": "Willow Go noise unknown",
+      "pass": true
+     },
+     {
+      "desc": "Elvie Pump 32 dB verified",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Willow Go noise not verified; cannot compare"
+    ]
+   },
+   {
+    "id": "G20",
+    "category": "noise",
+    "question": "Rank the Elvie Pump (32 dB), Magic InBra (38 dB) and Momcozy M5 (<48 dB) by noise.",
+    "productIds": [
+     "elvie-pump",
+     "medela-magic-inbra",
+     "momcozy-m5-smart"
+    ],
+    "checks": [
+     {
+      "desc": "all three have verified dB values",
+      "pass": true
+     },
+     {
+      "desc": "rules caution that dB claims are manufacturer figures with unstated measurement conditions",
+      "pass": false,
+      "detail": "No rule; Claude may present a cross-brand ranking as established fact."
+     }
+    ],
+    "expectedModelBehavior": [
+     "Gives each as a manufacturer claim with qualifier",
+     "Notes measurement conditions are not stated, so ranking is indicative only"
+    ],
+    "payloadFinding": "No guidance on cross-brand comparability of dB claims."
+   },
+   {
+    "id": "G21",
+    "category": "suction",
+    "question": "Is the Elvie Stride as strong as the Momcozy V3 (both 300 mmHg)?",
+    "productIds": [
+     "elvie-stride",
+     "momcozy-v3"
+    ],
+    "checks": [
+     {
+      "desc": "Stride value carries the 'single cup set up' qualifier outside the quote",
+      "pass": false,
+      "detail": "Value is {up-to 300 mmHg}; 'in a single cup set up' survives only inside the citation quote."
+     }
+    ],
+    "expectedModelBehavior": [
+     "Mentions Stride's 300 mmHg is stated for a single-cup setup"
+    ],
+    "payloadFinding": "Setup qualifier lost from structured value."
+   },
+   {
+    "id": "G22",
+    "category": "hands-free",
+    "question": "Is the Pump In Style Pro hands-free like the Motif Duo?",
+    "productIds": [
+     "medela-pump-in-style-pro",
+     "motif-duo"
+    ],
+    "checks": [
+     {
+      "desc": "PIS Pro with-accessories; Duo as-sold",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "PIS Pro needs separately purchased hands-free cups; Duo includes a pumping bra"
+    ]
+   },
+   {
+    "id": "G23",
+    "category": "power",
+    "question": "Can the Spectra S1 Plus run plugged into the wall?",
+    "productIds": [
+     "spectra-s1-plus"
+    ],
+    "checks": [
+     {
+      "desc": "powerSources verified as a single-item list",
+      "pass": true
+     },
+     {
+      "desc": "payload indicates whether a list attribute is exhaustive",
+      "pass": false,
+      "detail": "A verified ['built-in-battery'] reads as 'battery only'; the evidence is the product title 'Rechargeable'."
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says a rechargeable battery is verified; mains operation is not established in the catalog"
+    ],
+    "payloadFinding": "List attributes have no completeness semantics."
+   },
+   {
+    "id": "G24",
+    "category": "inferred",
+    "question": "Does the S2 Plus need to be plugged in?",
+    "productIds": [
+     "spectra-s2-plus"
+    ],
+    "checks": [
+     {
+      "desc": "mains is inferred, not verified",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Presents mains-only as PumpPath interpretation from the included adapter"
+    ]
+   },
+   {
+    "id": "G25",
+    "category": "provenance",
+    "question": "Is the Zomee W1 a closed system?",
+    "productIds": [
+     "zomee-mothers-nature-w1"
+    ],
+    "checks": [
+     {
+      "desc": "only citation is brand-wide and flagged",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says Zomee states all its pumps have a fully enclosed anti-backflow system, from the Z2 page"
+    ]
+   },
+   {
+    "id": "G26",
+    "category": "classification",
+    "question": "Is the Momcozy M6 a wearable?",
+    "productIds": [
+     "momcozy-m6-mobile-style"
+    ],
+    "checks": [
+     {
+      "desc": "classification unclassified with reason",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says configuration is not established"
+    ]
+   },
+   {
+    "id": "G27",
+    "category": "classification",
+    "question": "Is the Evenflo Advanced Double a personal-use pump?",
+    "productIds": [
+     "evenflo-advanced-double-electric"
+    ],
+    "checks": [
+     {
+      "desc": "multiUser unknown",
+      "pass": true
+     },
+     {
+      "desc": "classification basis discloses that multiUser=unknown was treated as not multi-user",
+      "pass": false,
+      "detail": "basis=['mechanism','collection']; the unknown multiUser assumption is silent."
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says single-user status is not stated"
+    ],
+    "payloadFinding": "Unknown multiUser silently treated as single-user in classification."
+   },
+   {
+    "id": "G28",
+    "category": "insurance",
+    "question": "Is the Spectra S2 Plus free with my insurance?",
+    "productIds": [
+     "spectra-s2-plus"
+    ],
+    "checks": [
+     {
+      "desc": "no offers supplied → offers empty",
+      "pass": true
+     },
+     {
+      "desc": "product facts contain no price/coverage keys or values",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says coverage and cost require a plan-specific quote",
+     "Does not quote retail prices or typical coverage"
+    ]
+   },
+   {
+    "id": "G29",
+    "category": "insurance",
+    "question": "Why is the Pump In Style Pro $75 at MamaMend but free at Bloom?",
+    "productIds": [
+     "medela-pump-in-style-pro"
+    ],
+    "planId": "evergreen-ppo",
+    "checks": [
+     {
+      "desc": "every offer labelled simulated",
+      "pass": true
+     },
+     {
+      "desc": "$0 and $75 totals present verbatim",
+      "pass": true
+     },
+     {
+      "desc": "list price / insurance-pays not exposed (no basis for Claude to compute)",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "States both figures as simulated quotes",
+     "Does not explain the difference with invented reasons (allowance, deductible)"
+    ]
+   },
+   {
+    "id": "G30",
+    "category": "insurance",
+    "question": "My plan is Acme Gold — which pumps are free?",
+    "productIds": [],
+    "planId": "no-such-plan",
+    "checks": [
+     {
+      "desc": "search returns coverage_unverified with no offers",
+      "pass": true
+     }
+    ],
+    "expectedModelBehavior": [
+     "Says coverage cannot be verified for that plan",
+     "Offers no paid fallback or guess"
+    ]
+   }
+  ]
+ },
+ "regression": {
+  "runOn": "2026-11-10",
+  "node": "v22.23.4",
+  "commands": {
+   "npm test": {
+    "exit": 0,
+    "passed": 263,
+    "failed": 0,
+    "skipped": 1555,
+    "perFile": {
+     "lib/products/semantics.test.ts": 191,
+     "lib/products/catalog.test.ts": 14,
+     "lib/grounding.test.ts": 8,
+     "lib/scenarios.test.ts": 12,
+     "lib/offers/search.test.ts": 15,
+     "lib/offers/simulated/provider.test.ts": 15,
+     "lib/suppliers/suppliers.test.ts": 8,
+     "lib/products/verify-sources.test.ts": "1555 skipped (opt-in; needs SOURCE_SNAPSHOTS)"
+    }
+   },
+   "npm run typecheck": {
+    "exit": 0
+   },
+   "npm run lint": {
+    "exit": 0,
+    "warnings": 0
+   },
+   "npm run build": {
+    "exit": 0,
+    "routes": [
+     "/",
+     "/_not-found"
+    ]
+   }
+  },
+  "liveSnapshotVerification": {
+   "pagesFetched": "73/73 manufacturer pages (2026-11-10/11, robots.txt honoured; 6 Spectra pages needed a 60 s-spaced retry after HTTP 429)",
+   "command": "SOURCE_SNAPSHOTS=<live region dir> npx vitest run lib/products/verify-sources.test.ts",
+   "passed": 1502,
+   "failed": 53,
+   "failuresExplained": "all 53 are Aeroflow supplier-listing checks; supplier pages were deliberately not fetched (out of scope)",
+   "quoteDrift": 0,
+   "unknownWithSignalFailures": 0
+  },
+  "scenarios": {
+   "A": {
+    "expected": "8 qualifying $0 offers from 6 suppliers",
+    "observed": "free_offers_found, 8 offers, 6 suppliers",
+    "pass": true
+   },
+   "B": {
+    "expected": "PIS Pro $0 at bloom-maternity (5 days), $75 at mama-mend (4 days), both $0 shipping; $0 ranks first; $75 never in free search",
+    "observed": "bloom-maternity fully-covered total 0 ship 0 5d in free results; mama-mend upgrade total 7500 ship 0 4d not in free results",
+    "pass": true
+   },
+   "H": {
+    "expected": "coastal-care / spectra-s2-plus qualifying $0; checkout scripted as timeout -> pending-reconciliation with idempotency key",
+    "observed": "quote fully-covered, total 0, qualifies; checkout script data present. Timeout behaviour itself is Milestone 4 and not executable yet.",
+    "pass": true
+   }
+  },
+  "freeOnlyRule": {
+   "freeOffersChecked": 92,
+   "violations": 0,
+   "mutations": "each of pump/shipping/otherMandatory/total set to null or 1 -> not qualifying; inStock null, status upgrade/unverified -> not qualifying",
+   "pass": true
+  },
+  "simulatedLabelling": {
+   "quotes": 188,
+   "labelledSimulated": 188,
+   "groundingOffersCarryLabel": true,
+   "pass": true
+  }
+ },
+ "offers": {
+  "plans": {
+   "evergreen-ppo": 47,
+   "harbor-hmo": 47,
+   "summit-epo": 47,
+   "bayview-medicaid": 47
+  },
+  "scenarios": {
+   "A": {
+    "outcome": "free_offers_found",
+    "n": 8,
+    "suppliers": 6,
+    "offers": [
+     "first-feed:spectra-s2-plus:0",
+     "milkway-medical:medela-pump-in-style-pro:0",
+     "cradle-supply:spectra-s2-plus:0",
+     "nurture-dme:medela-pump-in-style-pro:0",
+     "harborside-dme:medela-pump-in-style-pro:0",
+     "harborside-dme:spectra-s2-plus:0",
+     "bloom-maternity:medela-pump-in-style-pro:0",
+     "bloom-maternity:spectra-s2-plus:0"
+    ]
+   },
+   "B": {
+    "outcome": "free_offers_found",
+    "n": 8,
+    "suppliers": 6,
+    "offers": [
+     "first-feed:spectra-s2-plus:0",
+     "milkway-medical:medela-pump-in-style-pro:0",
+     "cradle-supply:spectra-s2-plus:0",
+     "nurture-dme:medela-pump-in-style-pro:0",
+     "harborside-dme:medela-pump-in-style-pro:0",
+     "harborside-dme:spectra-s2-plus:0",
+     "bloom-maternity:medela-pump-in-style-pro:0",
+     "bloom-maternity:spectra-s2-plus:0"
+    ],
+    "pair": [
+     {
+      "s": "bloom-maternity",
+      "status": "fully-covered",
+      "total": 0,
+      "ship": 0,
+      "days": 5,
+      "inFree": true
+     },
+     {
+      "s": "mama-mend",
+      "status": "upgrade",
+      "total": 7500,
+      "ship": 0,
+      "days": 4,
+      "inFree": false
+     }
+    ]
+   },
+   "H": {
+    "outcome": "free_offers_found",
+    "n": 8,
+    "suppliers": 5,
+    "offers": [
+     "milkway-medical:medela-pump-in-style-pro:0",
+     "milkway-medical:spectra-s1-plus:0",
+     "cradle-supply:spectra-s1-plus:0",
+     "cradle-supply:spectra-s2-plus:0",
+     "northstar-health:spectra-s1-plus:0",
+     "nurture-dme:medela-pump-in-style-pro:0",
+     "coastal-care:medela-pump-in-style-pro:0",
+     "coastal-care:spectra-s2-plus:0"
+    ],
+    "checkoutQuote": {
+     "status": "fully-covered",
+     "total": 0,
+     "qualifies": true,
+     "expected": "pending-reconciliation",
+     "idem": true
+    }
+   }
+  },
+  "mutations": [
+   {
+    "m": "baseline all-zero",
+    "qualifies": true
+   },
+   {
+    "m": "pumpOutOfPocketCents=null",
+    "qualifies": false
+   },
+   {
+    "m": "pumpOutOfPocketCents=1",
+    "qualifies": false
+   },
+   {
+    "m": "shippingCents=null",
+    "qualifies": false
+   },
+   {
+    "m": "shippingCents=1",
+    "qualifies": false
+   },
+   {
+    "m": "otherMandatoryCents=null",
+    "qualifies": false
+   },
+   {
+    "m": "otherMandatoryCents=1",
+    "qualifies": false
+   },
+   {
+    "m": "totalOutOfPocketCents=null",
+    "qualifies": false
+   },
+   {
+    "m": "totalOutOfPocketCents=1",
+    "qualifies": false
+   },
+   {
+    "m": "inStock=null",
+    "qualifies": false
+   },
+   {
+    "m": "status=upgrade",
+    "qualifies": false
+   },
+   {
+    "m": "status=unverified",
+    "qualifies": false
+   }
+  ],
+  "totalQuotes": 188,
+  "labelledSimulated": 188,
+  "freeOffersChecked": 92,
+  "freeViolations": [],
+  "verificationFailed": "coverage_unverified"
+ }
+}
