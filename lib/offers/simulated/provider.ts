@@ -1,4 +1,5 @@
 import { getProduct } from "@/lib/products";
+import { classifyProduct } from "@/lib/products/classification";
 import { simulatedSuppliers } from "@/lib/suppliers";
 import type { SimulatedSupplier } from "@/lib/suppliers/types";
 import {
@@ -28,12 +29,12 @@ export function simulatedPumpCostCents(plan: SimulatedPlan, offering: SimulatedO
 
 /** Deterministic mock coverage decision. Pure; no network and no member data. */
 export function simulateQuote(plan: SimulatedPlan, supplier: SimulatedSupplier, offering: SimulatedOffering, providerId: string): Quote {
-  const category = getProduct(offering.productId).category;
+  const classification = classifyProduct(getProduct(offering.productId));
   const reasons: IneligibilityReason[] = [];
 
   if (!supplier.inNetworkPlanIds.includes(plan.id)) reasons.push("out-of-network");
-  if (category.status !== "verified") reasons.push("category-unverified");
-  else if (!plan.coveredCategories.includes(category.value)) reasons.push("category-not-covered");
+  if (classification.status !== "derived") reasons.push("category-unverified");
+  else if (!plan.coveredCategories.includes(classification.category)) reasons.push("category-not-covered");
 
   const pumpCost = simulatedPumpCostCents(plan, offering);
   if (pumpCost > 0 && !plan.upgradesAllowed) reasons.push("upgrade-not-allowed");

@@ -2,12 +2,16 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { products, sources } from "@/lib/products";
+import type { ProductAttributeKey } from "@/lib/products/types";
 import { listingObservations } from "@/lib/suppliers";
 
-// Opt-in check that every quote appears verbatim in a saved copy of its source page.
-// Also checks supplier listing observations against saved listing pages and sitemaps.
-// Run: SOURCE_SNAPSHOTS=/path/to/pages npx vitest run lib/products/verify-sources.test.ts
-// Each snapshot is a .txt file whose first line is "URL: <fetched url>".
+// Opt-in checks against saved source pages:
+//  - every quote appears verbatim in its source's product region (section check);
+//  - supplier listing names / sitemap URLs appear in the saved listing pages;
+//  - an attribute left unknown while its product region carries a strong signal must explain why.
+// Snapshots should be product-region text from scripts/catalog/region.py (navigation, related
+// products and reviews removed). Each .txt file's first line is "URL: <fetched url>".
+// Run: SOURCE_SNAPSHOTS=/path/to/region npx vitest run lib/products/verify-sources.test.ts
 
 const dir = process.env.SOURCE_SNAPSHOTS;
 
@@ -44,7 +48,11 @@ describe.skipIf(!dir)("source quotes match saved pages", () => {
     Object.entries(p).flatMap(([attribute, value]) => {
       if (!value || typeof value !== "object" || !("status" in value)) return [];
       const evidence =
-        value.status === "verified" ? value.evidence : value.status === "conflicting" ? value.candidates.map((c: { evidence: unknown }) => c.evidence) : [];
+        value.status === "verified" || value.status === "inferred"
+          ? value.evidence
+          : value.status === "conflicting"
+            ? value.candidates.map((c: { evidence: unknown }) => c.evidence)
+            : [];
       return (evidence as { sourceId: string; quote: string }[]).map((e) => ({ product: p.id, attribute, ...e }));
     }),
   );
@@ -69,5 +77,26 @@ describe.skipIf(!dir)("source quotes match saved pages", () => {
         ? text!.includes(normalize(l.evidence.quote))
         : text!.split(" ").includes(l.listingUrl);
     expect(found, `${l.listingName} not in ${l.evidence.sourceUrl}`).toBe(true);
+  });
+
+  // Signals strong enough that an unknown value needs a recorded reason.
+  const SIGNALS: Partial<Record<ProductAttributeKey, RegExp>> = {
+    maxSuction: /\d{3}\s?mm\s?hg/i,
+    noise: /\d{2}\s?-?(db|decibels?)\b/i,
+    closedSystem: /closed[- ]system/i,
+    dishwasherSafe: /dishwasher/i,
+    batteryLife: /(battery (life|lasts)|lasts)[^.]{0,30}\d+(\.\d+)?\s?(h|hrs?|hours?|min|minutes?)\b/i,
+  };
+
+  const unknownWithSignal = products.flatMap((p) =>
+    (Object.keys(SIGNALS) as ProductAttributeKey[]).flatMap((k) => {
+      const a = p[k];
+      return a.status === "unknown" ? [{ p, k, note: a.note }] : [];
+    }),
+  );
+
+  it.each(unknownWithSignal.map((x) => [`${x.p.id}.${x.k}`, x] as const))("unknown %s is explained if the page signals a value", (_l, { p, k, note }) => {
+    const text = textFor(sources.find((s) => s.id === p.sourceIds[0])!.url) ?? "";
+    if (SIGNALS[k]!.test(text)) expect(note, `${p.id}.${k}: page has a ${k} signal but no note explains the unknown`).toBeTruthy();
   });
 });

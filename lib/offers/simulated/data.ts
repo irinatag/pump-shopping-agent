@@ -33,7 +33,7 @@ export interface CoverageOverride {
 /** Demo business rule: every simulated insurance pump offer ships free. */
 export const SIMULATED_SHIPPING_CENTS = 0;
 
-const ELECTRIC: PumpCategory[] = ["traditional-electric", "portable-electric", "hands-free-electric"];
+const ELECTRIC: PumpCategory[] = ["flange-bottle-electric", "hands-free-electric"];
 
 export const simulatedPlans: SimulatedPlan[] = [
   { id: "evergreen-ppo", carrier: "Evergreen Health", name: "Evergreen Choice PPO", planType: "PPO", coveredCategories: [...ELECTRIC, "wearable", "manual"], allowanceCents: 25000, upgradesAllowed: true },

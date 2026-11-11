@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getProduct, products, sources } from "@/lib/products";
 import { ATTRIBUTE_KEYS } from "@/lib/products/build";
+import { classifyProduct } from "@/lib/products/classification";
 import type { Attribute, PumpCategory } from "@/lib/products/types";
 
 const unique = (xs: string[]) => new Set(xs).size === xs.length;
@@ -46,11 +47,12 @@ describe("product catalog", () => {
     }
   });
 
-  it("covers a useful variety of pump categories", () => {
-    const categories = new Set(
-      products.flatMap((p) => (p.category.status === "verified" ? [p.category.value] : [])),
-    );
-    const expected: PumpCategory[] = ["traditional-electric", "portable-electric", "hands-free-electric", "wearable", "manual", "multi-user"];
+  it("covers a useful variety of derived pump categories", () => {
+    const categories = new Set(products.flatMap((p) => {
+      const c = classifyProduct(p);
+      return c.status === "derived" ? [c.category] : [];
+    }));
+    const expected: PumpCategory[] = ["flange-bottle-electric", "hands-free-electric", "wearable", "manual", "multi-user"];
     for (const c of expected) expect(categories).toContain(c);
   });
 
@@ -58,7 +60,7 @@ describe("product catalog", () => {
     for (const p of products) {
       for (const [key, a] of attributes(p)) {
         expect(a, `${p.id}.${key}`).toBeDefined();
-        expect(["verified", "conflicting", "unknown"]).toContain(a.status);
+        expect(["verified", "inferred", "conflicting", "unknown"]).toContain(a.status);
       }
     }
   });
@@ -87,26 +89,29 @@ describe("source provenance", () => {
         used.add(id);
       }
       for (const [key, a] of attributes(p)) {
-        const evidence = a.status === "verified" ? a.evidence : a.status === "conflicting" ? a.candidates.map((c) => c.evidence) : [];
+        const evidence =
+          a.status === "verified" || a.status === "inferred" ? a.evidence : a.status === "conflicting" ? a.candidates.map((c) => c.evidence) : [];
         for (const e of evidence) expect(p.sourceIds, `${p.id}.${key} cites ${e.sourceId}`).toContain(e.sourceId);
       }
     }
     expect([...declared].filter((id) => !used.has(id))).toEqual([]);
   });
 
-  it("supports every verified attribute with at least one non-empty verbatim quote", () => {
+  it("supports every verified and inferred attribute with at least one non-empty verbatim quote", () => {
     for (const p of products) {
       for (const [key, a] of attributes(p)) {
-        if (a.status !== "verified") continue;
+        if (a.status !== "verified" && a.status !== "inferred") continue;
         expect(a.evidence.length, `${p.id}.${key}`).toBeGreaterThan(0);
         for (const e of a.evidence) expect(e.quote.trim().length, `${p.id}.${key}`).toBeGreaterThan(0);
       }
     }
   });
 
-  it("requires every product to have a verified category, except ones explicitly left unknown", () => {
-    const unverified = products.filter((p) => p.category.status !== "verified").map((p) => p.id);
-    expect(unverified).toEqual(["momcozy-m6-mobile-style"]);
+  it("establishes every product's mechanism, and its collection configuration except where explicitly unknown", () => {
+    for (const p of products) expect(["verified", "inferred"], p.id).toContain(p.mechanism.status);
+    const noCollection = products.filter((p) => p.collection.status === "unknown").map((p) => p.id).sort();
+    expect(noCollection).toEqual(["ameda-pearl", "ameda-platinum", "medela-symphony-plus", "momcozy-m6-mobile-style"]);
+    for (const id of noCollection) expect(products.find((p) => p.id === id)!.collection).toHaveProperty("note");
   });
 });
 

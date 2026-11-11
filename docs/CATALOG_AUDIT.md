@@ -2,6 +2,8 @@
 
 **Audit date:** 2026-10-28 · **Scope:** `lib/products/` (74 records, 73 sources) · **Type:** read-only audit; no catalog, engine, provider, or test changes were made.
 
+> **Remediation status (2026-10-28):** all findings below were addressed in a follow-up remediation — see [Remediation](#remediation) at the end. The audit text is kept as originally written; attribute names in it (e.g. `power`, `category`) refer to the pre-remediation schema.
+
 ## Method
 
 1. Selected 20 verified attributes from 12 models across 9 brands, weighted toward numeric specs, variants, classifications, and interpretive (high-risk) records; plus 3 of the 8 recorded conflicts.
@@ -108,3 +110,63 @@ These are recommendations only; nothing has been changed.
 
 All accessible (HTTP 200, robots.txt permitted):
 Medela Pump In Style Pro · Spectra S2 Plus · Spectra Synergy Gold · Motif Luna · Motif Duo · Motif Roam · Momcozy M5 Smart · Momcozy V3 · Lansinoh Wearable · Lansinoh NaturalWave · Willow 360 · Elvie Stride (onewillow.com) · Ameda Pearl · Zomee Fit · Zomee Z2.
+
+## Remediation
+
+**Date:** 2026-10-28. Scope: extraction process, product schema and classification, evidence provenance, attribute semantics, and verification. Simulated prices, plans, and quote-provider logic were not changed beyond accommodating the refined schema; all 191 simulated quotes and the Scenario A, B, H free-search results are identical before and after (diffed).
+
+### Sampled attributes
+
+| # | Original | Remediation | Status |
+|---|---|---|---|
+| S01, S04, S05, S09–S12, S14–S20 | PASS | Unchanged in value. S12 (M5 Smart suction) comparator corrected `eq` → `up-to` because the page also says "up to -285 mmHg". S14 (V3 hands-free) now cites "Hands-Free Freedom". S20 (Zomee Fit closed system) now cites the Fit page's own anti-backflow line plus the Z2 statement flagged `brand-wide`. | Resolved |
+| S02 PIS Pro handsFree | NEEDS REVIEW | Re-encoded as `with-accessories` under the new definition; the same rule now applies to Sonata, Luna, H1, Signature Comfort, Smartpump 3.0, Z2. | Resolved |
+| S03 PIS Pro closedSystem | NEEDS REVIEW | Status changed to **inferred**, rationale: milk barrier described in answer to the closed-system FAQ without saying yes. | Resolved |
+| S06 S2 Plus power | NEEDS REVIEW | `powerSources: ["mains"]` is now **inferred** (adapter is the only listed source; no battery mentioned). | Resolved |
+| S07 SG closedSystem | NEEDS REVIEW | Status changed to **inferred**; rationale records that the explicit closed-system block is in copy written for the SG Portable. | Resolved |
+| S08 SG category | NEEDS REVIEW | Category is no longer stored. SG now classifies as `flange-bottle-electric` from verified mechanism ("Electric Breast Pump" title) and collection (flanges + storage bottles in the box). | Resolved |
+| S13 M5 weight scope | NEEDS REVIEW | Scope changed `per-unit` → `unspecified`. | Resolved |
+
+### Catalog-wide findings
+
+| ID | Finding | Remediation | Status |
+|---|---|---|---|
+| I-06 | NaturalWave category contradicted its evidence | Now `flange-bottle-electric` from verified mechanism + collection; its handle is recorded separately as `portability: carry-handle`. Portability can no longer affect category. | Resolved |
+| I-07 | Sonata category unsupported | Now `flange-bottle-electric` from "Double pumping kit" + storage bottles; handle recorded as portability. | Resolved |
+| I-08 | Spectra S1 Plus / S2 Plus false closed-system unknowns | Now verified from the product's own "Closed System / Prevents backflow into tubing or pump." block. The same miss was found and fixed on the 9 Plus. | Resolved |
+| I-09 | 10 categories resting on titles | Category removed from storage; every product classifies from mechanism + collection + multiUser evidence (`lib/products/classification.ts`). The traditional/portable distinction, which no source states, is retired. | Resolved |
+| I-10 | V3 category vs hands-free | V3 collection is `external-unit-with-in-bra-cups` (tabletop motor + "wearable collectors") → `hands-free-electric`. Also found: Willow Sync's motor is in-bra ("One in-bra motor, two-cup design") → `wearable`. Neither is offered in the simulation. | Resolved |
+| I-11 | Borrowed evidence | Symphony PLUS re-sourced to its own page's meta description ("hospital-grade, multi-user"), `section: page-metadata`; mechanism inferred from its EMC statement. Elvie Pump "tube-free" flagged `other-product`; Zomee closed-system flagged `brand-wide`; Evenflo family statement flagged `brand-wide`. A test now requires these flags. | Resolved |
+| I-12 | `handsFree` semantics | Defined (`as-sold` / `with-accessories`); wearables described only as "wearable" are `as-sold` **inferred**; enforced by tests. | Resolved |
+| I-13 | `power` semantics | Replaced by `powerSources` (operating modes). Chargers are no longer `mains`; 14 values became inferred, explicit mains claims remain verified. | Resolved |
+| I-14 | Missed stated attributes | Extraction rebuilt (below); 52 attributes newly established, including Willow 360 power and sessions, Zomee Fit cleaning, S3 Pro closed system, Handy Plus 350 mmHg, GLO dishwasher, Aura Glow 90 min. | Resolved |
+| I-15 | Inferred closed-system values | PIS Pro, SG, Momcozy V1/V2 Pro closed system are **inferred** with rationale. | Resolved |
+| I-16 | Scope and qualifier normalization | Comparators and weight scopes defined in DATA.md and enforced by a test that checks each number's unit and adjacent qualifier in the quote. | Resolved |
+
+### Recurring problems
+
+| Problem | Remediation |
+|---|---|
+| Extraction tooling hid real spec lines (50% boilerplate filter; 3-lines-per-tag cap) | Both rules removed. `scripts/catalog/region.py` keeps the full product region and removes navigation, related products, and reviews structurally. All 73 pages were re-examined: 152 unknown/conflicting candidates were reviewed by hand; 52 were established, the rest were navigation, purchase-option selectors, upsells, reviews, or comparison tables. |
+| Verbatim match proves presence, not support | New offline semantic checks (units, qualifiers, scopes, hands-free/power/dishwasher definitions, cross-product names, variants) and an opt-in check that every quote lies in the product region. Human review remains for context questions (documented in DATA.md). |
+| Category was a PumpPath judgment | Category is now derived, never stored, with its basis and `usesInferred` exposed to grounding. |
+| Undefined semantics | Definitions in DATA.md; enforced by `lib/products/semantics.test.ts`. |
+| Silent cross-page evidence | `scope` and `section` on every evidence item; test-enforced. |
+
+### Conflicts
+
+All eight conflicts are preserved unresolved. New corroborating text was found but not used to resolve them: Motif Roam's FAQ says "approximately 120 minutes"; the Luna FAQ says the battery model "lasts over 4 hours".
+
+### Still unsupported / open
+
+- Momcozy M6 collection (unclassified); Ameda Pearl collection and closed system (page says the HygieniKit is both included and sold separately); Symphony PLUS and Ameda Platinum collection (kits sold separately).
+- Weight remains unknown for 50 products and noise for 52 — manufacturers do not publish them on these pages; manuals were not consulted.
+- Momcozy S9 Pro, W1 and Willow Go, Elvie Pump state battery only as sessions; recorded in `batterySessions`, `batteryLife` left unknown.
+
+### Changes to test expectations
+
+- `catalog.test.ts`: the category-variety and verified-category tests now assert derived classifications and established mechanism/collection; attribute statuses include `inferred`; provenance checks include inferred evidence.
+- `grounding.test.ts`: the unknown example moved from S1 Plus `closedSystem` (now verified) to Synergy Gold `weight`; new tests for the inferred section, derived classification, and brand-wide citations.
+- Scenario preferences changed from `traditional-electric` to `flange-bottle-electric` (category rename). Scenario **expectations are unchanged**: A still returns 8 offers from 6 suppliers; B and H unchanged.
+- New: `lib/products/semantics.test.ts` (190 checks); opt-in verifier extended (inferred evidence, region-only matching, unknown-with-signal check).
+

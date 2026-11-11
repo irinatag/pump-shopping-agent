@@ -38,9 +38,9 @@ export const scenarios: DemoScenario[] = [
   {
     id: "A",
     title: "Multiple free options",
-    summary: "PPO member looking for a traditional double electric pump; several simulated suppliers offer one at $0.",
+    summary: "PPO member looking for an electric pump with flanges and bottles; several simulated suppliers offer one at $0.",
     planId: "evergreen-ppo",
-    preferences: { categories: ["traditional-electric"] },
+    preferences: { categories: ["flange-bottle-electric"] },
   },
   {
     id: "B",
@@ -48,7 +48,7 @@ export const scenarios: DemoScenario[] = [
     summary:
       "Under the same simulated PPO, the Medela Pump In Style Pro is $0 at Bloom Maternity but $75 at MamaMend — both with free shipping.",
     planId: "evergreen-ppo",
-    preferences: { categories: ["traditional-electric"] },
+    preferences: { categories: ["flange-bottle-electric"] },
     priceComparison: {
       productId: "medela-pump-in-style-pro",
       freeSupplierId: "bloom-maternity",
@@ -62,7 +62,7 @@ export const scenarios: DemoScenario[] = [
     summary:
       "Member picks a $0 pump, but the simulated supplier's order submission times out; the order must be reconciled, not retried blindly.",
     planId: "summit-epo",
-    preferences: { categories: ["traditional-electric"] },
+    preferences: { categories: ["flange-bottle-electric"] },
     checkout: {
       supplierId: "coastal-care",
       productId: "spectra-s2-plus",

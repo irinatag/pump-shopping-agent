@@ -1,4 +1,4 @@
-import { conflict, list, product, unknown, v } from "@/lib/products/build";
+import { brandWide, conflict, inferred, list, product, v } from "@/lib/products/build";
 import type { Source } from "@/lib/products/types";
 
 const src = (id: string, path: string): Source => ({
@@ -17,7 +17,7 @@ export const zomeeSources: Source[] = [
 ];
 
 /** Brand-wide statement on the Z2 page covering every Zomee pump. */
-const ALL_ZOMEE_CLOSED = v(true, "zomee-z2", "All Zomee breast pumps, including the Z2, have a fully enclosed, anti-backflow system.");
+const ALL_ZOMEE_CLOSED = brandWide("zomee-z2", "All Zomee breast pumps, including the Z2, have a fully enclosed, anti-backflow system.");
 
 export const zomeeProducts = [
   product({
@@ -25,13 +25,13 @@ export const zomeeProducts = [
     brand: "Zomee",
     model: "Mother's Nature H1",
     sourceIds: ["zomee-h1"],
-    category: v("traditional-electric", "zomee-h1", "It’s also the only tabletop hospital-grade breast pump"),
+    collection: v(["flanges-and-bottles"], "zomee-h1", "(2) Breast Shield Bodies", "(2) 6 oz / 180 mL Bottles"),
     pumping: v("double", "zomee-h1", "independently adjustable suction strength and cycle speed for each breast"),
-    power: v(["ac-adapter"], "zomee-h1", "(1) AC Adapter"),
+    powerSources: inferred(["mains"], "The included AC adapter is the only power source listed; the page mentions no battery.", "zomee-h1", "(1) AC Adapter"),
     maxSuction: v({ amount: 300, unit: "mmHg", comparator: "eq" }, "zomee-h1", "Highest available hospital-grade suction strength at 300 mmHg"),
     suctionLevels: v("12 adjustable suction levels, set per breast", "zomee-h1", "12 adjustable suction levels to personalize every pumping session."),
     noise: v({ amount: 46, unit: "dB", comparator: "eq" }, "zomee-h1", "The H1 operates at 46 decibels."),
-    handsFree: unknown("Manufacturer recommends a separately sold pumping bra for hands-free use."),
+    handsFree: v("with-accessories", "zomee-h1", "For the best hands-free pumping experience, use the Mother's Nature™ H1 Breast Pump with the 2-in-1 Pumping Bra"),
     closedSystem: v(true, "zomee-h1", "Closed-system design prevents milk and bacteria from entering the motor for maximum hygiene."),
     capacity: v({ amount: 180, unit: "ml", comparator: "eq" }, "zomee-h1", "(2) 6 oz / 180 mL Bottles"),
     includedItems: list("zomee-h1", [
@@ -56,11 +56,14 @@ export const zomeeProducts = [
     brand: "Zomee",
     model: "Z2",
     sourceIds: ["zomee-z2"],
-    category: v("portable-electric", "zomee-z2", "Quiet and compact—46db operation—ideal for home, work, or travel", "wear the pump with the Lanyard for hands-free mobility"),
-    power: v(["built-in-battery", "ac-adapter"], "zomee-z2", "Lightweight with a built-in rechargeable lithium battery", "(1) Power Adapter"),
+    collection: v(["flanges-and-bottles"], "zomee-z2", "(2) Bottles", "(2) Tubing Sets"),
+    pumping: v("single-or-double", "zomee-z2", "Use as a single or double pump depending on your needs"),
+    powerSources: v(["built-in-battery"], "zomee-z2", "Lightweight with a built-in rechargeable lithium battery"),
+    portability: v(["clip-or-lanyard"], "zomee-z2", "wear the pump with the Lanyard for hands-free mobility"),
     maxSuction: v({ amount: 300, unit: "mmHg", comparator: "eq" }, "zomee-z2", "Hospital-grade strength for efficient milk expression—300mmHg"),
     suctionLevels: v("3 modes, 9 suction levels each", "zomee-z2", "With Massage, Expression, and 2-Phase modes—each with 9 suction levels"),
     noise: v({ amount: 46, unit: "dB", comparator: "eq" }, "zomee-z2", "operating at 46 decibels"),
+    handsFree: v("with-accessories", "zomee-z2", "attach the Hands-Free Collection Cups directly to the Z2 tubing, or use a Pumping Bra"),
     closedSystem: v(true, "zomee-z2", "Closed system prevents milk from entering tubing for hygienic use"),
     includedItems: list("zomee-z2", [
       "(1) Zomee Z2 Pump",
@@ -80,13 +83,14 @@ export const zomeeProducts = [
     brand: "Zomee",
     model: "Fit",
     sourceIds: ["zomee-fit", "zomee-z2"],
-    category: v("wearable", "zomee-fit", "Worn inside your bra for true hands-free convenience"),
-    power: v(["built-in-battery"], "zomee-fit", "Rechargeable battery for flexible, on-the-go use"),
+    collection: v(["in-bra-wearable"], "zomee-fit", "Worn inside your bra for true hands-free convenience"),
+    powerSources: v(["built-in-battery"], "zomee-fit", "Rechargeable battery for flexible, on-the-go use"),
     batteryLife: v({ amount: 150, unit: "min", comparator: "up-to" }, "zomee-fit", "the Zomee Fit provides up to 2.5 hours of pumping time"),
     maxSuction: v({ amount: 280, unit: "mmHg", comparator: "eq" }, "zomee-fit", "Hospital-grade suction at 280mmHg with whisper-quiet 46 dB operation."),
     noise: v({ amount: 46, unit: "dB", comparator: "eq" }, "zomee-fit", "The Fit operates at 46 decibels"),
-    handsFree: v(true, "zomee-fit", "Worn inside your bra for true hands-free convenience"),
-    closedSystem: ALL_ZOMEE_CLOSED,
+    handsFree: v("as-sold", "zomee-fit", "Worn inside your bra for true hands-free convenience"),
+    closedSystem: v(true, "zomee-fit", "Built-in anti-backflow system to help prevent leaks and protect milk", ALL_ZOMEE_CLOSED),
+    cleaning: v("4 washable parts", "zomee-fit", "Simplified assembly with only four washable parts"),
     capacity: conflict(
       "Feature copy and box contents state different container sizes.",
       [{ amount: 6, unit: "oz", comparator: "eq" }, "zomee-fit", "Larger 6 oz container (7 oz sold separately) for longer sessions"],
@@ -116,14 +120,14 @@ export const zomeeProducts = [
     brand: "Zomee",
     model: "Mother's Nature W1 Warming Wearable",
     sourceIds: ["zomee-w1", "zomee-z2"],
-    category: v("wearable", "zomee-w1", "Compact, lightweight and hands-free design fits discreetly in your bra"),
-    power: v(["built-in-battery"], "zomee-w1", "Quick 90-minute charge for over 2+ hours of use."),
+    collection: v(["in-bra-wearable"], "zomee-w1", "Compact, lightweight and hands-free design fits discreetly in your bra"),
+    powerSources: v(["built-in-battery"], "zomee-w1", "Quick 90-minute charge for over 2+ hours of use."),
     batteryLife: v({ amount: 120, unit: "min", comparator: "at-least" }, "zomee-w1", "provides over 120 minutes of pumping time"),
     maxSuction: v({ amount: 300, unit: "mmHg", comparator: "eq" }, "zomee-w1", "Hospital-grade suction at 300mmHg with whisper-quiet 46 dB operation."),
     suctionLevels: v("12 suction levels", "zomee-w1", "12 customizable suction levels"),
     noise: v({ amount: 46, unit: "dB", comparator: "eq" }, "zomee-w1", "The W1 runs at 46 decibels"),
-    handsFree: v(true, "zomee-w1", "Compact, lightweight and hands-free design fits discreetly in your bra"),
-    closedSystem: ALL_ZOMEE_CLOSED,
+    handsFree: v("as-sold", "zomee-w1", "Compact, lightweight and hands-free design fits discreetly in your bra"),
+    closedSystem: v(true, "zomee-z2", ALL_ZOMEE_CLOSED),
     capacity: v({ amount: 6, unit: "oz", comparator: "eq" }, "zomee-w1", "(2) W1 Pumps - Includes: Motor, 6 oz Milk Collector"),
     includedItems: list("zomee-w1", [
       "(2) W1 Pumps - Includes: Motor, 6 oz Milk Collector, Diaphragm, Duckbill Valve, 24mm Warming Breast Shield",

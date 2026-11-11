@@ -1,4 +1,4 @@
-import { list, product, v } from "@/lib/products/build";
+import { inferred, list, product, titleQuote, unknown, v } from "@/lib/products/build";
 import type { Source } from "@/lib/products/types";
 
 const src = (id: string, path: string): Source => ({
@@ -18,17 +18,29 @@ export const amedaSources: Source[] = [
   src("ameda-glo", "glo-wearable-breast-pump"),
 ];
 
+const HYGIENIKIT = "The included HygieniKit milk collection system is a flange-and-container kit.";
+const HYGIENIKIT_CLOSED = "Ameda’s HygieniKit true closed system not only helps protect breast milk from backing up into the tubing";
+
 export const amedaProducts = [
   product({
     id: "ameda-mya-joy",
     brand: "Ameda",
     model: "Mya Joy",
     sourceIds: ["ameda-mya-joy"],
-    category: v("portable-electric", "ameda-mya-joy", "Battery-operated, lightweight, and clips right onto a waist band, purse pocket, or favorite yoga pants"),
-    power: v(["ac-adapter", "aa-batteries"], "ameda-mya-joy", "AC Power Adapter", "The Mya Joy has an internal battery compartment that requires 4 AA batteries."),
+    collection: inferred(["flanges-and-bottles"], HYGIENIKIT, "ameda-mya-joy", "Dual HygieniKit® Milk Collection System", "CustomFit™ Flanges (25mm, 28.5mm)"),
+    pumping: v("single-or-double", "ameda-mya-joy", "Adaptable for single or double pumping"),
+    powerSources: inferred(
+      ["mains", "aa-batteries"],
+      "AA operation is stated; mains operation is inferred from the included AC power adapter on a pump without a rechargeable battery.",
+      "ameda-mya-joy",
+      "AC Power Adapter",
+      "The Mya Joy has an internal battery compartment that requires 4 AA batteries.",
+    ),
+    portability: v(["clip-or-lanyard"], "ameda-mya-joy", "clips right onto a waist band, purse pocket, or favorite yoga pants"),
     maxSuction: v({ amount: 250, unit: "mmHg", comparator: "up-to" }, "ameda-mya-joy", "Up to 250 mmHg suction strength"),
     suctionLevels: v("6 stimulation levels, 12 expression levels", "ameda-mya-joy", "Stimulation (6 Levels) & Expression Mode (12 Levels)"),
     noise: v({ amount: 45, unit: "dB", comparator: "lt" }, "ameda-mya-joy", "Operates at less than 45dB and allows for discreet pumping anywhere"),
+    closedSystem: v(true, "ameda-mya-joy", HYGIENIKIT_CLOSED),
     includedItems: list("ameda-mya-joy", [
       "Ameda Mya Joy Breast Pump",
       "Dual HygieniKit® Milk Collection System",
@@ -42,12 +54,15 @@ export const amedaProducts = [
     brand: "Ameda",
     model: "Mya Joy PLUS",
     sourceIds: ["ameda-mya-joy-plus"],
-    category: v("portable-electric", "ameda-mya-joy-plus", "Ameda Mya Joy PLUS Rechargeable, Quiet, and Portable Double Breast Pump"),
+    collection: inferred(["flanges-and-bottles"], HYGIENIKIT, "ameda-mya-joy-plus", "Dual HygieniKit® Milk Collection System", "CustomFit™ Flanges (25mm, 28.5mm)"),
     pumping: v("double", "ameda-mya-joy-plus", "Ameda Mya Joy PLUS Rechargeable, Quiet, and Portable Double Breast Pump"),
-    power: v(["built-in-battery", "ac-adapter"], "ameda-mya-joy-plus", "Small & lightweight with a rechargeable battery, USB charging cord, and convenient wrist lanyard", "AC Power Adapter with USB-C cord"),
+    powerSources: v(["built-in-battery"], "ameda-mya-joy-plus", "Integrated rechargeable battery provides up to 3 hours pumping time on a single charge"),
+    batteryLife: v({ amount: 180, unit: "min", comparator: "up-to" }, "ameda-mya-joy-plus", "Integrated rechargeable battery provides up to 3 hours pumping time on a single charge"),
+    portability: v(["clip-or-lanyard"], "ameda-mya-joy-plus", "Small & lightweight with a rechargeable battery, USB charging cord, and convenient wrist lanyard"),
     maxSuction: v({ amount: 250, unit: "mmHg", comparator: "up-to" }, "ameda-mya-joy-plus", "Up to 250 mmHg suction strength"),
     suctionLevels: v("6 stimulation levels, 12 expression levels", "ameda-mya-joy-plus", "2-phase adjustable suction modes: Stimulation (6 Levels) & Expression Mode (12 Levels)"),
     noise: v({ amount: 45, unit: "dB", comparator: "lt" }, "ameda-mya-joy-plus", "Operates at less than 45dB and allows for discreet pumping anywhere"),
+    closedSystem: v(true, "ameda-mya-joy-plus", HYGIENIKIT_CLOSED),
     includedItems: list("ameda-mya-joy-plus", [
       "Ameda Mya Joy PLUS Breast Pump",
       "AC Power Adapter with USB-C cord",
@@ -61,10 +76,12 @@ export const amedaProducts = [
     brand: "Ameda",
     model: "Pearl",
     sourceIds: ["ameda-pearl"],
-    category: v("multi-user", "ameda-pearl", "Powerful: Hospital Grade / Multi-User Performance with two modes of pumping"),
-    power: v(["built-in-battery", "ac-adapter"], "ameda-pearl", "2600mAh Lithium-ion rechargeable battery; 3 hours per charge", "AC Power Adapter"),
+    collection: unknown("Page lists a HygieniKit in the box but also says the HygieniKit is sold separately."),
+    multiUser: v(true, "ameda-pearl", "Powerful: Hospital Grade / Multi-User Performance with two modes of pumping"),
+    powerSources: v(["built-in-battery"], "ameda-pearl", "2600mAh Lithium-ion rechargeable battery; 3 hours per charge"),
     batteryLife: v({ amount: 180, unit: "min", comparator: "eq" }, "ameda-pearl", "2600mAh Lithium-ion rechargeable battery; 3 hours per charge"),
-    weight: v({ amount: 54, unit: "oz", comparator: "eq", scope: "pump" }, "ameda-pearl", "3lbs. 6oz"),
+    portability: v(["carry-handle"], "ameda-pearl", "Portable: Lightweight with rechargeable battery and integrated handle"),
+    weight: inferred({ amount: 54, unit: "oz", comparator: "eq", scope: "motor" }, "Unit weight 3 lb 6 oz, converted to 54 oz.", "ameda-pearl", "Unit Weight:", "3lbs. 6oz"),
     maxSuction: v({ amount: 250, unit: "mmHg", comparator: "up-to" }, "ameda-pearl", "Expression: 30 - 250mmHg; 12 user-selectable settings"),
     suctionLevels: v(
       "6 stimulation settings, 12 expression settings",
@@ -72,6 +89,7 @@ export const amedaProducts = [
       "Stimulation: 50 - 150mmHg; 6 user-selectable settings",
       "Expression: 30 - 250mmHg; 12 user-selectable settings",
     ),
+    closedSystem: unknown("Page says the closed-system HygieniKit is sold separately, but also lists a HygieniKit in the box."),
     includedItems: list("ameda-pearl", ["Pearl® Breast Pump", "AC Power Adapter", "HygieniKit Milk Collection Kit", "Quick Start Card"]),
   }),
   product({
@@ -79,9 +97,11 @@ export const amedaProducts = [
     brand: "Ameda",
     model: "Platinum Multi-User",
     sourceIds: ["ameda-platinum"],
-    category: v("multi-user", "ameda-platinum", "(1) Platinum Multi-User Hospital Grade Electric Breast Pump"),
+    mechanism: v("electric", "ameda-platinum", "(1) Platinum Multi-User Hospital Grade Electric Breast Pump"),
+    collection: unknown("Collection kits are sold separately."),
+    multiUser: v(true, "ameda-platinum", "(1) Platinum Multi-User Hospital Grade Electric Breast Pump"),
     pumping: v("single-or-double", "ameda-platinum", "VacuSense technology provides consistent suction for single and double pumping and varying altitudes"),
-    power: v(["ac-adapter"], "ameda-platinum", "(1) Power Cord"),
+    powerSources: v(["mains"], "ameda-platinum", "(1) Power Cord"),
     maxSuction: v({ amount: 250, unit: "mmHg", comparator: "up-to" }, "ameda-platinum", "Displays 30-250 mmHg shown in mom-friendly units of 1-100% suction"),
     includedItems: list("ameda-platinum", ["(1) Platinum Multi-User Hospital Grade Electric Breast Pump", "(1) Power Cord"]),
   }),
@@ -90,9 +110,10 @@ export const amedaProducts = [
     brand: "Ameda",
     model: "One-Hand Manual",
     sourceIds: ["ameda-manual"],
-    category: v("manual", "ameda-manual", "The ergonomic design of the one-hand handle allows mothers to achieve multi-phase pumping by varying handle squeezes"),
+    mechanism: v("manual", "ameda-manual", "(1) One-Hand Manual Breast Pump Adapter"),
+    collection: v(["flanges-and-bottles"], "ameda-manual", "(1) 25.0mm CustomFit Breast Flanges", "(1) 4.0oz Bottle with Universal Thread and Lock-Tight Lid"),
     pumping: v("single", "ameda-manual", "(1) Single HygieniKit® Milk Collection System"),
-    power: v(["none"], "ameda-manual", "by varying handle squeezes to mimic their baby’s nursing rhythm"),
+    powerSources: inferred(["none"], "Hand-operated by squeezing the handle.", "ameda-manual", "by varying handle squeezes to mimic their baby’s nursing rhythm"),
     capacity: v({ amount: 4, unit: "oz", comparator: "eq" }, "ameda-manual", "(1) 4.0oz Bottle with Universal Thread and Lock-Tight Lid"),
     includedItems: list("ameda-manual", [
       "(1) One-Hand Manual Breast Pump Adapter",
@@ -110,12 +131,14 @@ export const amedaProducts = [
     brand: "Ameda",
     model: "GLO Wearable",
     sourceIds: ["ameda-glo"],
-    category: v("wearable", "ameda-glo", "GLO® Wearable Breast Pump"),
-    power: v(["built-in-battery"], "ameda-glo", "Up to 100 minutes of uninterrupted pumping on a single charge"),
+    collection: v(["in-bra-wearable"], "ameda-glo", "GLO® Wearable Breast Pump"),
+    pumping: v("single-or-double", "ameda-glo", "The Ameda GLO Wearable Breast Pump allows both single and double pumping"),
+    powerSources: v(["built-in-battery"], "ameda-glo", "Up to 100 minutes of uninterrupted pumping on a single charge"),
     batteryLife: v({ amount: 100, unit: "min", comparator: "up-to" }, "ameda-glo", "Up to 100 minutes of uninterrupted pumping on a single charge"),
-    weight: v({ amount: 8.6, unit: "oz", comparator: "eq", scope: "per-unit" }, "ameda-glo", "Weight: 8.6 oz | 243.8g (each)"),
+    weight: v({ amount: 8.6, unit: "oz", comparator: "eq", scope: "single-wearable-unit" }, "ameda-glo", "Weight: 8.6 oz | 243.8g (each)"),
     suctionLevels: v("4 modes, 15 levels each", "ameda-glo", "4 Customizable Modes With 15 Levels Each"),
-    handsFree: v(true, "ameda-glo", "Glo Wearable Breast Pump | Hands Free Breast Pump | Ameda"),
+    handsFree: v("as-sold", "ameda-glo", titleQuote("ameda-glo", "Glo Wearable Breast Pump | Hands Free Breast Pump | Ameda")),
+    dishwasherSafe: v({ parts: "some", topRackOnly: null }, "ameda-glo", "All pump parts that come into contact with breast milk are dishwasher safe"),
     capacity: v({ amount: 6, unit: "oz", comparator: "eq" }, "ameda-glo", "6oz leak-resistant, reusable cups for efficient milk collection."),
   }),
 ];

@@ -1,4 +1,5 @@
 import { getProduct } from "@/lib/products";
+import { classifyProduct } from "@/lib/products/classification";
 import type { FreeOfferSearch, Quote, QuoteProvider, UserPreferences } from "@/lib/offers/types";
 
 /**
@@ -42,8 +43,8 @@ export function rankQuotes(quotes: Quote[]): Quote[] {
 
 function matchesPreferences(q: Quote, preferences: UserPreferences): boolean {
   if (preferences.categories.length === 0) return true;
-  const category = getProduct(q.productId).category;
-  return category.status === "verified" && preferences.categories.includes(category.value);
+  const c = classifyProduct(getProduct(q.productId));
+  return c.status === "derived" && preferences.categories.includes(c.category);
 }
 
 /** Default free-pump search: only qualifying $0 offers, never a paid fallback. */

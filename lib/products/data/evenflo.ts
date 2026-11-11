@@ -1,4 +1,4 @@
-import { product, v } from "@/lib/products/build";
+import { brandWide, product, v } from "@/lib/products/build";
 import type { Source } from "@/lib/products/types";
 
 const src = (id: string, path: string): Source => ({
@@ -18,6 +18,9 @@ export const evenfloSources: Source[] = [
 ];
 
 const DOUBLE_CLOSED = "Closed system design helps prevent milk back up in tubing and motor to keep parts clean, dry, and functioning properly.";
+const FAMILY_PARTS = "All Evenflo Feeding Advanced Breast Pumps have interchangeable parts, flanges, collection bottles";
+const flangeBottle = (sourceId: string) =>
+  v(["flanges-and-bottles" as const], sourceId, "Includes two flange sizes to help you have a more comfortable, effective pumping session.", brandWide(sourceId, FAMILY_PARTS));
 
 // The Advanced and Deluxe Advanced pages share identical feature copy and do not
 // state how the two differ, so neither is recorded as a variant of the other.
@@ -27,9 +30,10 @@ export const evenfloProducts = [
     brand: "Evenflo",
     model: "Advanced Double Electric",
     sourceIds: ["evenflo-advanced-double"],
-    category: v("traditional-electric", "evenflo-advanced-double", "This full-time use breast pump uses an AC adapter or 6 AA batteries."),
+    mechanism: v("electric", "evenflo-advanced-double", "Advanced Double Electric Breast Pump"),
+    collection: flangeBottle("evenflo-advanced-double"),
     pumping: v("single-or-double", "evenflo-advanced-double", "Closed system, pump single or double mode"),
-    power: v(["ac-adapter", "aa-batteries"], "evenflo-advanced-double", "This full-time use breast pump uses an AC adapter or 6 AA batteries."),
+    powerSources: v(["mains", "aa-batteries"], "evenflo-advanced-double", "This full-time use breast pump uses an AC adapter or 6 AA batteries."),
     closedSystem: v(true, "evenflo-advanced-double", DOUBLE_CLOSED),
     features: v(["Independent speed and suction controls"], "evenflo-advanced-double", "Independent speed and suction controls"),
   }),
@@ -38,9 +42,10 @@ export const evenfloProducts = [
     brand: "Evenflo",
     model: "Deluxe Advanced Double Electric",
     sourceIds: ["evenflo-deluxe-advanced-double"],
-    category: v("traditional-electric", "evenflo-deluxe-advanced-double", "This full-time use breast pump uses an AC adapter or 6 AA batteries."),
+    mechanism: v("electric", "evenflo-deluxe-advanced-double", "Deluxe Advanced Double Electric Breast Pump"),
+    collection: flangeBottle("evenflo-deluxe-advanced-double"),
     pumping: v("single-or-double", "evenflo-deluxe-advanced-double", "Closed system, pump single or double mode"),
-    power: v(["ac-adapter", "aa-batteries"], "evenflo-deluxe-advanced-double", "Operates with AC adapter or AA batteries"),
+    powerSources: v(["mains", "aa-batteries"], "evenflo-deluxe-advanced-double", "This full-time use breast pump uses an AC adapter or 6 AA batteries."),
     closedSystem: v(true, "evenflo-deluxe-advanced-double", DOUBLE_CLOSED),
     features: v(["Independent speed and suction controls"], "evenflo-deluxe-advanced-double", "Independent speed and suction controls"),
   }),
@@ -49,8 +54,10 @@ export const evenfloProducts = [
     brand: "Evenflo",
     model: "Advanced Single Electric",
     sourceIds: ["evenflo-advanced-single"],
-    category: v("portable-electric", "evenflo-advanced-single", "Compact & travel-friendly"),
+    mechanism: v("electric", "evenflo-advanced-single", "Advanced Single Electric Breast Pump"),
+    collection: v(["flanges-and-bottles"], "evenflo-advanced-single", "Includes multiple flange sizes (28.0mm & 30.5mm)"),
     pumping: v("single", "evenflo-advanced-single", "Advanced Single Electric Breast Pump"),
+    powerSources: v(["mains", "aa-batteries"], "evenflo-advanced-single", "This portable pump has multiple power options‚ AC Adapter, AA Batteries (sold separately)"),
     closedSystem: v(true, "evenflo-advanced-single", "Closed system design helps prevent milk back up in pump motor keeping parts clean, dry and functioning properly."),
     features: v(["Designed for occasional use"], "evenflo-advanced-single", "Designed for Occasional-Use Pumping"),
   }),
@@ -59,7 +66,8 @@ export const evenfloProducts = [
     brand: "Evenflo",
     model: "Advanced Manual",
     sourceIds: ["evenflo-advanced-manual"],
-    category: v("manual", "evenflo-advanced-manual", "Advanced Manual Breast Pump"),
+    mechanism: v("manual", "evenflo-advanced-manual", "Advanced Manual Breast Pump"),
+    collection: v(["flanges-and-bottles"], "evenflo-advanced-manual", "Includes multiple flange sizes (24.5mm & 30.5mm)"),
     features: v(["Designed for occasional use"], "evenflo-advanced-manual", "Designed for occasional-use pumping"),
   }),
   product({
@@ -67,9 +75,11 @@ export const evenfloProducts = [
     brand: "Evenflo",
     model: "Pocket Portable Double Electric",
     sourceIds: ["evenflo-pocket"],
-    category: v("portable-electric", "evenflo-pocket", "The new, full-time use breast pump fits in any bag and clips to your waistband."),
+    mechanism: v("electric", "evenflo-pocket", "Pocket Portable Double Electric Breast Pump"),
+    collection: flangeBottle("evenflo-pocket"),
     pumping: v("double", "evenflo-pocket", "Pocket Portable Double Electric Breast Pump"),
-    power: v(["built-in-battery"], "evenflo-pocket", "Compact and portable with rechargeable battery"),
+    powerSources: v(["built-in-battery"], "evenflo-pocket", "Compact and portable with rechargeable battery"),
+    portability: v(["pocket-or-bag-sized", "clip-or-lanyard"], "evenflo-pocket", "The new, full-time use breast pump fits in any bag and clips to your waistband."),
     suctionLevels: v("9 suction levels, 6 speeds, 3 memory presets", "evenflo-pocket", "Pump your way with 9 suction levels, 6 speed settings, and 3 memory presents"),
     closedSystem: v(true, "evenflo-pocket", DOUBLE_CLOSED),
   }),

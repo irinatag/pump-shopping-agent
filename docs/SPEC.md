@@ -7,7 +7,7 @@
 
 You are a senior full-stack engineer, AI agent developer, and product designer. Build a functional, polished, mobile-first PumpPath demo, prioritizing a working end-to-end journey over infrastructure.
 
-**Do not initialize or rebuild the project.** Inspect the existing repository before proposing changes. Milestones 1 and 1.5 are implemented and reportedly pass 70 Vitest tests (plus an opt-in source-verification suite), typecheck, lint, and production build. Verify these claims against the local repository rather than assuming they remain true. Preserve existing behavior and tests unless a specifically approved milestone requires changes.
+**Do not initialize or rebuild the project.** Inspect the existing repository before proposing changes. Milestones 1 and 1.5 (including the data-quality remediation) are implemented and reportedly pass 263 Vitest tests (plus an opt-in source-verification suite of 1,555 checks), typecheck, lint, and production build. Verify these claims against the local repository rather than assuming they remain true. Preserve existing behavior and tests unless a specifically approved milestone requires changes.
 
 **Work one milestone at a time.** First compare this specification with the repository, identify conflicts or gaps, and propose Milestone 2 scope. **Do not modify files until I explicitly approve Milestone 2.** After each milestone, run checks, report files changed and manual test steps, then stop. Do not commit unless asked.
 
@@ -31,7 +31,7 @@ No monorepo, LangGraph, Trigger.dev, Docker, Redis, Supabase, workers, job queue
 
 Three separate data domains (full details in `docs/DATA.md`; confirm names/exports before editing):
 
-- **Product catalog** — `lib/products/`: **74 real US-market pump records (73 distinct models + 1 variant) from 12 brands**, each attribute `verified` (verbatim manufacturer quote + source URL + access date), `conflicting`, or `unknown`. No prices, shipping, stock, or coverage. Categories: traditional electric, portable electric, hands-free electric, wearable, manual, multi-user.
+- **Product catalog** — `lib/products/`: **74 real US-market pump records (73 distinct models + 1 variant) from 12 brands**, each attribute `verified` (verbatim manufacturer quote + source URL + access date), `inferred` (PumpPath interpretation with rationale), `conflicting`, or `unknown`. No prices, shipping, stock, or coverage. Pump category is **derived** (`lib/products/classification.ts`) from mechanism, collection configuration, and multi-user evidence: flange-and-bottle electric, hands-free electric (external motor + in-bra cups), wearable, manual, multi-user. Portability is a separate attribute and never determines category.
 - **Supplier catalog** — `lib/suppliers/`: real suppliers (Aeroflow listings collected as names/URLs only; Yummy Mummy not collected per its terms) and **12 fictional simulated suppliers**. A listing is never evidence of coverage.
 - **Dynamic insurance offers** — `lib/offers/`: `QuoteProvider` interface; `SimulatedQuoteProvider` with 4 fictional plans, simulated offerings for 9 catalog products, and a plan + supplier + product coverage override. List price is simulated; plan default member cost is list price minus allowance, floored at zero; overrides apply only after network/category checks; insurance + member pump cost = list price. **Every simulated offer has `shippingCents = 0`.** Quotes carry `provenance` and nullable `charges` (pump, shipping, other mandatory, total).
 - `lib/grounding.ts`: the only context Claude may use — verified product facts with citations, explicit conflicts/unknowns, and offer facts with provenance.
@@ -89,7 +89,7 @@ Show fictional order reference, model, supplier, simulated cost, and delivery es
 
 Provide a simple selector visible only in demo mode. There are **three** scenarios, not four.
 
-**A — Multiple free options:** Evergreen PPO, traditional-electric preference; expected **8 qualifying $0 offers from 6 suppliers**. Recommend the best 1–2 distinct models in Milestone 3, using preferences and shipping.
+**A — Multiple free options:** Evergreen PPO, flange-and-bottle electric preference; expected **8 qualifying $0 offers from 6 suppliers**. Recommend the best 1–2 distinct models in Milestone 3, using preferences and shipping.
 
 **B — Same model, different supplier price:** Evergreen PPO, the real **Medela Pump In Style Pro** (simulated list price $229). **Bloom Maternity** offers it at **$0** with 5-day shipping; **MamaMend** offers the exact same `productId` at **$75** with 4-day shipping. Both are in network, in stock, and ship free. All prices and coverage here are simulated. The $0 Bloom offer appears in free search and ranks ahead of the paid quote; the $75 quote appears only in labeled supplier-price comparison. The override is plan-specific; the same model at MamaMend is $0 under Bayview.
 
@@ -107,7 +107,7 @@ All eligibility, availability, and charges come from a `QuoteProvider` (`lib/off
 
 ## 8. Tests and verification
 
-Preserve the existing 70 tests reported at Milestone 1.5 completion. Add focused tests per milestone; no heavy E2E framework required. Important invariants:
+Preserve the existing 263 tests reported at Milestone 1.5 remediation. Add focused tests per milestone; no heavy E2E framework required. Important invariants:
 
 1. Free search returns only in-stock, fully covered $0 offers.
 2. Unknown plans and simulated verification failures return `coverage_unverified`, not fabricated coverage.
@@ -133,7 +133,7 @@ Next.js scaffold, shadcn/ui, plans, twelve fictional suppliers, coverage overrid
 
 ### Milestone 1.5 — Real product data foundation — COMPLETE (do not redo)
 
-Replaced the fictional pumps with 74 source-verified real pump records, separated product / supplier / offer domains, added the `QuoteProvider` interface and `SimulatedQuoteProvider`, the $0 simulated shipping rule, Aeroflow listing observations, grounding for Claude, `docs/DATA.md`, and 70 tests. Treat the repository as authoritative for current implementation details.
+Replaced the fictional pumps with 74 source-verified real pump records, separated product / supplier / offer domains, added the `QuoteProvider` interface and `SimulatedQuoteProvider`, the $0 simulated shipping rule, Aeroflow listing observations, grounding for Claude, `docs/DATA.md`, and tests. A follow-up data-quality remediation (see `docs/CATALOG_AUDIT.md`) fixed the extraction process, split pump classification into evidence-backed attributes, added inferred/brand-wide/other-product provenance, defined attribute semantics, and added automated semantic checks (263 tests). Simulated coverage outcomes were unchanged. Treat the repository as authoritative for current implementation details.
 
 ### Milestone 2 — User journey and comparison (next; approval required)
 

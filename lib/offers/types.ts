@@ -15,7 +15,7 @@ export type IneligibilityReason =
   | "out-of-network"
   | "category-not-covered"
   | "upgrade-not-allowed"
-  /** The product's category is not verified in the catalog, so coverage cannot be decided. */
+  /** The product cannot be classified from catalog evidence, so coverage cannot be decided. */
   | "category-unverified";
 
 /** All amounts are integer cents; null means the provider did not supply the value. */
