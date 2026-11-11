@@ -1,4 +1,4 @@
-import { list, product, unknown, v } from "@/lib/products/build";
+import { inferred, list, product, unknown, v } from "@/lib/products/build";
 import type { Source } from "@/lib/products/types";
 
 const src = (id: string, path: string): Source => ({
@@ -29,8 +29,11 @@ const S_SERIES_BOX = [
   "Two (2) Spectra Wide Neck Storage Bottles with Nursing Nipples, Nipple Mounting Rings, Covers, and Airtight Caps",
   "One (1) Spectra 12V AC Power Adapter/Charger",
 ];
+const S_SERIES_COLLECTION = ["Two (2) 24mm Spectra Breast Flanges", "Two (2) Spectra Wide Neck Storage Bottles with Nursing Nipples, Nipple Mounting Rings, Covers, and Airtight Caps"];
 
-const CAROUSEL_NOTE = "A weight appears on the page only next to a related-product carousel; not attributable to this model.";
+const CLOSED_BLOCK = ["Closed System", "Prevents backflow into tubing or pump."];
+const CAROUSEL_NOTE = "A weight appears on the page only in a feature block written for the SG Portable; not attributable to this model.";
+const ADAPTER_ONLY = "The included 12V AC adapter is the only power source listed; the page mentions no battery.";
 
 export const spectraProducts = [
   product({
@@ -38,12 +41,13 @@ export const spectraProducts = [
     brand: "Spectra",
     model: "S1 Plus",
     sourceIds: ["spectra-s1-plus"],
-    category: v("traditional-electric", "spectra-s1-plus", "S1 Plus Premier Rechargeable Double Electric Breast Pump"),
+    mechanism: v("electric", "spectra-s1-plus", "S1 Plus Premier Rechargeable Double Electric Breast Pump"),
+    collection: v(["flanges-and-bottles"], "spectra-s1-plus", ...S_SERIES_COLLECTION),
     pumping: v("double", "spectra-s1-plus", "S1 Plus Premier Rechargeable Double Electric Breast Pump"),
-    power: v(["built-in-battery", "ac-adapter"], "spectra-s1-plus", "S1 Plus Premier Rechargeable Double Electric Breast Pump", "One (1) Spectra 12V AC Power Adapter/Charger"),
-    weight: v({ amount: 3, unit: "lb", comparator: "eq", scope: "pump" }, "spectra-s1-plus", "Weighs only 3 lbs."),
+    powerSources: v(["built-in-battery"], "spectra-s1-plus", "S1 Plus Premier Rechargeable Double Electric Breast Pump"),
+    weight: v({ amount: 3, unit: "lb", comparator: "eq", scope: "unspecified" }, "spectra-s1-plus", "Weighs only 3 lbs."),
     maxSuction: v({ amount: 270, unit: "mmHg", comparator: "up-to" }, "spectra-s1-plus", "Up to 270mmHg hospital strength suction."),
-    closedSystem: unknown("Only a customer review on the page describes it as closed."),
+    closedSystem: v(true, "spectra-s1-plus", ...CLOSED_BLOCK),
     includedItems: list("spectra-s1-plus", S_SERIES_BOX),
   }),
   product({
@@ -51,13 +55,14 @@ export const spectraProducts = [
     brand: "Spectra",
     model: "S2 Plus",
     sourceIds: ["spectra-s2-plus"],
-    category: v("traditional-electric", "spectra-s2-plus", "S2 Plus Premier Double Electric Breast Pump"),
+    mechanism: v("electric", "spectra-s2-plus", "S2 Plus Premier Double Electric Breast Pump"),
+    collection: v(["flanges-and-bottles"], "spectra-s2-plus", ...S_SERIES_COLLECTION),
     pumping: v("single-or-double", "spectra-s2-plus", "Single or double pump capability"),
-    power: v(["ac-adapter"], "spectra-s2-plus", "One (1) Spectra 12V AC Power Adapter/Charger"),
-    weight: v({ amount: 2.5, unit: "lb", comparator: "eq", scope: "pump" }, "spectra-s2-plus", "Weighs only 2.5 pounds"),
+    powerSources: inferred(["mains"], ADAPTER_ONLY, "spectra-s2-plus", "One (1) Spectra 12V AC Power Adapter/Charger"),
+    weight: v({ amount: 2.5, unit: "lb", comparator: "eq", scope: "unspecified" }, "spectra-s2-plus", "Weighs only 2.5 pounds"),
     maxSuction: v({ amount: 270, unit: "mmHg", comparator: "up-to" }, "spectra-s2-plus", "Up to 270mmHg hospital strength suction."),
     suctionLevels: v("Vacuum up to level 12", "spectra-s2-plus", "Vacuum suction up to L12"),
-    closedSystem: unknown("Only a customer review on the page describes it as closed."),
+    closedSystem: v(true, "spectra-s2-plus", ...CLOSED_BLOCK),
     includedItems: list("spectra-s2-plus", S_SERIES_BOX),
     features: list("spectra-s2-plus", ["Advanced massage mode settings", "Advanced expression mode settings"]),
   }),
@@ -66,10 +71,12 @@ export const spectraProducts = [
     brand: "Spectra",
     model: "9 Plus",
     sourceIds: ["spectra-9-plus"],
-    category: v("portable-electric", "spectra-9-plus", "9 Plus Premier Portable Rechargeable Breast Pump"),
-    power: v(["built-in-battery", "ac-adapter"], "spectra-9-plus", "Rechargeable for pumping on the go", "One (1) Spectra 9V AC Power Adapter/Charger"),
-    weight: v({ amount: 0.5, unit: "lb", comparator: "eq", scope: "pump" }, "spectra-9-plus", "Weighs only .5 pounds"),
+    collection: v(["flanges-and-bottles"], "spectra-9-plus", "Two (2) 24mm Spectra Breast Flanges", "Two (2) Spectra Wide Neck Storage Bottles. Includes nipple, cap, disc, and cover for each bottle"),
+    pumping: v("single-or-double", "spectra-9-plus", "Single or double pump capability"),
+    powerSources: v(["built-in-battery"], "spectra-9-plus", "Rechargeable for pumping on the go"),
+    weight: v({ amount: 0.5, unit: "lb", comparator: "eq", scope: "unspecified" }, "spectra-9-plus", "Weighs only .5 pounds"),
     maxSuction: v({ amount: 260, unit: "mmHg", comparator: "up-to" }, "spectra-9-plus", "Up to 260mmHg hospital strength suction."),
+    closedSystem: v(true, "spectra-9-plus", ...CLOSED_BLOCK),
     includedItems: list("spectra-9-plus", [
       "Two (2) 24mm Spectra Breast Flanges",
       "Two (2) Spectra Tubing",
@@ -84,12 +91,18 @@ export const spectraProducts = [
     brand: "Spectra",
     model: "Synergy Gold (SG)",
     sourceIds: ["spectra-sg"],
-    category: v("traditional-electric", "spectra-sg", "Synergy Gold® Double Adjustable Electric Breast Pump"),
+    mechanism: v("electric", "spectra-sg", "Synergy Gold® Double Adjustable Electric Breast Pump"),
+    collection: v(["flanges-and-bottles"], "spectra-sg", "Two (2) 24mm Spectra Breast Flanges", "Two (2) Spectra Wide Neck Storage Bottles. Includes nipple, cap, disc and cover for each bottle"),
     pumping: v("double", "spectra-sg", "Synergy Gold® Double Adjustable Electric Breast Pump"),
-    power: v(["ac-adapter"], "spectra-sg", "One (1) Spectra 12V AC Power Adapter/Charger"),
+    powerSources: inferred(["mains"], ADAPTER_ONLY, "spectra-sg", "One (1) Spectra 12V AC Power Adapter/Charger"),
     weight: unknown(CAROUSEL_NOTE),
     maxSuction: v({ amount: 270, unit: "mmHg", comparator: "up-to" }, "spectra-sg", "Up to 270 mmHg on each side"),
-    closedSystem: v(true, "spectra-sg", "Backflow protection to prevent contamination"),
+    closedSystem: inferred(
+      true,
+      "The SG's own feature list says “Backflow protection”; the page's explicit closed-system block appears in copy written for the SG Portable.",
+      "spectra-sg",
+      "Backflow protection to prevent contamination",
+    ),
     features: list("spectra-sg", [
       "Dual controls allow for independent settings on each breast",
       "Touch screen LCD with timer control and mute mode",
@@ -101,10 +114,11 @@ export const spectraProducts = [
     brand: "Spectra",
     model: "Synergy Gold Portable",
     sourceIds: ["spectra-sg-portable"],
-    category: v("portable-electric", "spectra-sg-portable", "Synergy Gold® Portable Double Adjustable Electric Breast Pump"),
+    mechanism: v("electric", "spectra-sg-portable", "Synergy Gold® Portable Double Adjustable Electric Breast Pump"),
+    collection: v(["flanges-and-bottles"], "spectra-sg-portable", "Two (2) 24mm Spectra breast flanges", "Two (2) Spectra Wide Neck Storage Bottles. Includes nipple, disc, cap, and cover for each bottle"),
     pumping: v("double", "spectra-sg-portable", "Synergy Gold® Portable Double Adjustable Electric Breast Pump"),
-    power: v(["built-in-battery", "ac-adapter"], "spectra-sg-portable", "Rechargeable – portable with built-in battery", "One (1) Spectra 5V AC Power Adapter/Charger"),
-    weight: unknown(CAROUSEL_NOTE),
+    powerSources: v(["built-in-battery"], "spectra-sg-portable", "Rechargeable – portable with built-in battery"),
+    weight: unknown("A weight appears on the page only in a repeated feature block; not attributable with confidence."),
     closedSystem: v(true, "spectra-sg-portable", "Closed System – prevents backflow into tubing or pump"),
     features: list("spectra-sg-portable", [
       "Double Adjustable – independent vacuum preset cycles settings for each breast",
@@ -116,8 +130,10 @@ export const spectraProducts = [
     brand: "Spectra",
     model: "Handy Plus Manual",
     sourceIds: ["spectra-handy-plus"],
-    category: v("manual", "spectra-handy-plus", "Handy Plus Manual Breast Pump"),
-    power: v(["none"], "spectra-handy-plus", "Handy Plus Manual Breast Pump"),
+    mechanism: v("manual", "spectra-handy-plus", "Handy Plus Manual Breast Pump"),
+    collection: v(["flanges-and-bottles"], "spectra-handy-plus", "One (1) Spectra 24mm Flange (non-detachable)", "One (1) Spectra Hand-Pump Bottle with nipple, cap, disc, cover, and stand"),
+    powerSources: inferred(["none"], "Hand-operated manual pump.", "spectra-handy-plus", "One (1) Spectra Hand-Pump Handle, Silicone Diaphragm, Diaphragm Link, Valve Head"),
+    maxSuction: v({ amount: 350, unit: "mmHg", comparator: "up-to" }, "spectra-handy-plus", "provides powerful suction up to 350mmHg."),
     capacity: v({ amount: 150, unit: "ml", comparator: "eq" }, "spectra-handy-plus", "bottle holds 150mL"),
     includedItems: list("spectra-handy-plus", [
       "One (1) Spectra Silicone Massager Insert",
@@ -132,9 +148,9 @@ export const spectraProducts = [
     brand: "Spectra",
     model: "Premier Wearable",
     sourceIds: ["spectra-premier-wearable"],
-    category: v("wearable", "spectra-premier-wearable", "Premier Wearable Breast Pump"),
-    power: v(["built-in-battery"], "spectra-premier-wearable", "Rechargeable: portable with built-in battery"),
-    batteryLife: unknown("Stated only as 5-6 pumping sessions."),
+    collection: v(["in-bra-wearable"], "spectra-premier-wearable", "Premier Wearable Breast Pump", "Spectra Premier Wearable Breast Pump Assemblies (2)"),
+    powerSources: v(["built-in-battery"], "spectra-premier-wearable", "Rechargeable: portable with built-in battery"),
+    batterySessions: v({ amount: 6, unit: "sessions", comparator: "up-to" }, "spectra-premier-wearable", "Extended Battery Life: 5-6 pumping sessions"),
     maxSuction: v({ amount: 280, unit: "mmHg", comparator: "eq" }, "spectra-premier-wearable", "Hospital-Strength: 280mmHg adjustable suction"),
     suctionLevels: v(
       "5 massage levels; 5 expression levels with 3 rhythms",
@@ -142,7 +158,7 @@ export const spectraProducts = [
       "Massage Modes: 5 levels of massage for comfort & efficiency",
       "Expression Modes: 5 levels of expression with 3 rhythms",
     ),
-    handsFree: v(true, "spectra-premier-wearable", "Everything you need for wearable pumping"),
+    handsFree: inferred("as-sold", "Self-contained in-bra wearable design.", "spectra-premier-wearable", "Everything you need for wearable pumping"),
     closedSystem: v(true, "spectra-premier-wearable", "Closed System: hygienic pump protection"),
     includedItems: list("spectra-premier-wearable", [
       "Spectra Premier Wearable Breast Pump Assemblies (2)",
@@ -161,10 +177,13 @@ export const spectraProducts = [
     brand: "Spectra",
     model: "S3 Pro Multi-user",
     sourceIds: ["spectra-s3-pro"],
-    category: v("multi-user", "spectra-s3-pro", "S3 Pro Hospital Grade Multi-user Rechargeable Breast Pump"),
-    power: v(["built-in-battery", "ac-adapter"], "spectra-s3-pro", "Rechargeable battery and 3-year pump warranty", "One (1) Spectra 12V AC Power Adapter/Charger"),
+    collection: v(["flanges-and-bottles"], "spectra-s3-pro", "Two (2) 24mm Spectra Breast Flanges", "Two (2) Spectra Wide Neck Storage Bottles with cap, disc, and cover for each"),
+    multiUser: v(true, "spectra-s3-pro", "S3 Pro Hospital Grade Multi-user Rechargeable Breast Pump"),
+    pumping: v("single-or-double", "spectra-s3-pro", "Single or double pump capability"),
+    powerSources: v(["built-in-battery"], "spectra-s3-pro", "Rechargeable battery and 3-year pump warranty"),
     maxSuction: v({ amount: 270, unit: "mmHg", comparator: "up-to" }, "spectra-s3-pro", "Capable of providing vacuum levels from 0-270 mmHg"),
     suctionLevels: v("12 expression levels", "spectra-s3-pro", "12 levels of expression."),
+    closedSystem: v(true, "spectra-s3-pro", "Engineered with a true closed system"),
     includedItems: list("spectra-s3-pro", [
       "Two (2) 24mm Spectra Breast Flanges",
       "Two (2) 28mm Spectra Breast Flanges",

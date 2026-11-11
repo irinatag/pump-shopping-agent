@@ -1,5 +1,6 @@
 // Domain A — product catalog. Real, source-backed pump models only.
 // No prices, shipping, stock, or insurance coverage may live here.
+// Attribute definitions and recording rules: docs/DATA.md.
 
 export type SourceKind = "manufacturer-page" | "manufacturer-manual";
 
@@ -16,44 +17,76 @@ export interface Source {
 export interface Evidence {
   sourceId: string;
   quote: string;
+  /**
+   * Whose claim this is. "this-product" (default): the page describes this model.
+   * "brand-wide": a manufacturer statement covering all its pumps.
+   * "other-product": a statement about this model made on another product's page.
+   */
+  scope?: "this-product" | "brand-wide" | "other-product";
+  /** Where on the page. Default "product-content"; title/metadata are still the model's own page. */
+  section?: "product-content" | "page-title" | "page-metadata";
 }
 
 export type Attribute<T> =
+  /** The quotes state the value directly. */
   | { status: "verified"; value: T; evidence: Evidence[] }
+  /** The value follows from the quotes by a stated rule, but the source does not say it outright. */
+  | { status: "inferred"; value: T; evidence: Evidence[]; rationale: string }
   | { status: "conflicting"; candidates: { value: T; evidence: Evidence }[]; note: string }
   | { status: "unknown"; note?: string };
 
-export type PumpCategory =
-  /** Tabletop or bag-style electric pump with tubing and bottles. */
-  | "traditional-electric"
-  /** Small handheld or clip-on electric motor with tubing and bottles. */
-  | "portable-electric"
-  /** Separate motor unit driving in-bra collection cups through tubing. */
-  | "hands-free-electric"
-  /** Self-contained motor and collection cup worn in the bra. */
-  | "wearable"
-  | "manual"
-  /** Multi-user pump, typically rented. */
-  | "multi-user";
+/** How milk is collected, per configuration included in the box. */
+export type CollectionType =
+  /** Self-contained unit (motor + collector) worn inside the bra; no external unit. */
+  | "in-bra-wearable"
+  /** Collection cups worn in the bra, driven by an external motor or handle through tubing. */
+  | "external-unit-with-in-bra-cups"
+  /** Flanges held at the breast with bottles or containers below them. */
+  | "flanges-and-bottles"
+  /** Single-piece silicone collector using passive suction. */
+  | "one-piece-silicone";
 
-export type PowerOption = "ac-adapter" | "built-in-battery" | "aa-batteries" | "battery-pack" | "none";
+/** Modes the pump can operate in. A charger for a rechargeable battery is not "mains". */
+export type PowerSource = "mains" | "built-in-battery" | "aa-batteries" | "battery-pack" | "none";
+
+export type Portability = "carry-handle" | "clip-or-lanyard" | "pocket-or-bag-sized" | "cordless-operation";
+
+export type HandsFree =
+  /** Hands-free with what is in the box. */
+  | "as-sold"
+  /** Hands-free only with separately sold accessories (pumping bra, bustier, cups). */
+  | "with-accessories";
+
+export type WeightScope = "motor" | "kit" | "single-wearable-unit" | "per-cup" | "pair" | "unspecified";
 
 export type WeightUnit = "g" | "kg" | "oz" | "lb";
 
-export interface Weight {
-  amount: number;
-  unit: WeightUnit;
-  /** "lt" for statements such as "less than 2 pounds". */
-  comparator: "eq" | "lt";
-  /** What was weighed, as the source describes it. */
-  scope: "pump" | "motor" | "per-unit" | "per-cup" | "system";
-}
+export type Comparator =
+  | "eq"
+  /** "less than", "under", "<", "nearly". */
+  | "lt"
+  /** "up to", "≤", "max". */
+  | "up-to"
+  /** "over", "more than", "+". */
+  | "at-least"
+  /** "approximately", "about", "≈", "on average". */
+  | "approximately";
 
 export interface Measure<U extends string> {
   amount: number;
   unit: U;
-  /** "lt" = less than, "up-to" = at most, "at-least" = this much or more (e.g. "over 2 hours"). */
-  comparator: "eq" | "lt" | "up-to" | "at-least";
+  comparator: Comparator;
+}
+
+export interface Weight extends Measure<WeightUnit> {
+  scope: WeightScope;
+}
+
+export interface DishwasherSafety {
+  /** "all" only when the source says all parts; "some" when it names parts or exclusions. */
+  parts: "all" | "some" | "unspecified";
+  /** true when the source says top rack; null when it does not say. */
+  topRackOnly: boolean | null;
 }
 
 export interface Product {
@@ -63,19 +96,23 @@ export interface Product {
   market: "US";
   /** Set when this record is a variant of another (e.g. with/without battery). */
   variantOf?: string;
-  /** Manufacturer pages this record was built from. */
+  /** Manufacturer pages this record was built from; the first is the model's own page. */
   sourceIds: string[];
-  category: Attribute<PumpCategory>;
+  mechanism: Attribute<"electric" | "manual">;
+  collection: Attribute<CollectionType[]>;
+  multiUser: Attribute<boolean>;
   pumping: Attribute<"single" | "double" | "single-or-double">;
-  power: Attribute<PowerOption[]>;
+  powerSources: Attribute<PowerSource[]>;
   batteryLife: Attribute<Measure<"min">>;
+  batterySessions: Attribute<Measure<"sessions">>;
+  portability: Attribute<Portability[]>;
   weight: Attribute<Weight>;
   maxSuction: Attribute<Measure<"mmHg">>;
   suctionLevels: Attribute<string>;
   noise: Attribute<Measure<"dB">>;
-  handsFree: Attribute<boolean>;
+  handsFree: Attribute<HandsFree>;
   closedSystem: Attribute<boolean>;
-  dishwasherSafe: Attribute<boolean>;
+  dishwasherSafe: Attribute<DishwasherSafety>;
   cleaning: Attribute<string>;
   capacity: Attribute<Measure<"ml" | "oz">>;
   includedItems: Attribute<string[]>;
@@ -83,3 +120,6 @@ export interface Product {
 }
 
 export type ProductAttributeKey = Exclude<keyof Product, "id" | "brand" | "model" | "market" | "variantOf" | "sourceIds">;
+
+/** Category used by coverage rules. Derived from mechanism, collection and multiUser — never stored. */
+export type PumpCategory = "flange-bottle-electric" | "hands-free-electric" | "wearable" | "manual" | "multi-user";

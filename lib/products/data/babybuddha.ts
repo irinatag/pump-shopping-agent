@@ -1,4 +1,4 @@
-import { conflict, list, product, v } from "@/lib/products/build";
+import { conflict, inferred, list, product, v } from "@/lib/products/build";
 import type { Source } from "@/lib/products/types";
 
 const src = (id: string, path: string): Source => ({
@@ -21,8 +21,10 @@ export const babyBuddhaProducts = [
     brand: "BabyBuddha",
     model: "BabyBuddha 3.0",
     sourceIds: ["babybuddha-3"],
-    category: v("portable-electric", "babybuddha-3", "Its compact external motor hangs from the included lanyard and connects by tubing to the flanges and bottles."),
-    power: v(["built-in-battery"], "babybuddha-3", "Rechargeable external motor with USB-C charging"),
+    collection: v(["flanges-and-bottles"], "babybuddha-3", "Its compact external motor hangs from the included lanyard and connects by tubing to the flanges and bottles."),
+    pumping: v("single-or-double", "babybuddha-3", "Single or double pumping"),
+    powerSources: v(["built-in-battery"], "babybuddha-3", "Rechargeable external motor with USB-C charging"),
+    portability: v(["clip-or-lanyard"], "babybuddha-3", "Its compact external motor hangs from the included lanyard"),
     maxSuction: v({ amount: 315, unit: "mmHg", comparator: "up-to" }, "babybuddha-3", "Adjustable suction ranging from 53 to 315 mmHg"),
     suctionLevels: v(
       "Soft Stimulation 6, Classic Expression 9, Double Drop Expression 9 levels",
@@ -54,11 +56,11 @@ export const babyBuddhaProducts = [
     brand: "BabyBuddha",
     model: "Wearable",
     sourceIds: ["babybuddha-wearable"],
-    category: v("wearable", "babybuddha-wearable", "Our Wearable Pump is designed to move with you, it’s the ultimate in-bra solution."),
-    power: v(["built-in-battery"], "babybuddha-wearable", "Full charge in 60 minutes with more than two hours of pumping time"),
+    collection: v(["in-bra-wearable"], "babybuddha-wearable", "Our Wearable Pump is designed to move with you, it’s the ultimate in-bra solution."),
+    powerSources: v(["built-in-battery"], "babybuddha-wearable", "Full charge in 60 minutes with more than two hours of pumping time"),
     batteryLife: v({ amount: 120, unit: "min", comparator: "at-least" }, "babybuddha-wearable", "Full charge in 60 minutes with more than two hours of pumping time"),
     suctionLevels: v("4 modes, 30 settings", "babybuddha-wearable", "Four modes and 30 settings let you adjust the pumping pattern and strength for comfort."),
-    handsFree: v(true, "babybuddha-wearable", "Our Wearable Pump is designed to move with you, it’s the ultimate in-bra solution."),
+    handsFree: v("as-sold", "babybuddha-wearable", "Our Wearable Pump is designed to move with you, it’s the ultimate in-bra solution."),
     capacity: conflict(
       "The page states two different cup capacities.",
       [{ amount: 6, unit: "oz", comparator: "at-least" }, "babybuddha-wearable", "Collection capacity of more than 6 ounces per cup"],
@@ -80,8 +82,13 @@ export const babyBuddhaProducts = [
     brand: "BabyBuddha",
     model: "Manual Breast Pump",
     sourceIds: ["babybuddha-manual"],
-    category: v("manual", "babybuddha-manual", "Your BabyBuddha Manual Breast Pump box includes:"),
-    dishwasherSafe: v(true, "babybuddha-manual", "are top-rack dishwasher safe!"),
+    mechanism: v("manual", "babybuddha-manual", "Your BabyBuddha Manual Breast Pump box includes:"),
+    collection: inferred(["flanges-and-bottles"], "Hand pump body with a massage cushion that attaches to the included bottle.", "babybuddha-manual", "1 Massage Cushion", "1 Wide-Neck Bottle (4.7 Ounces)"),
+    dishwasherSafe: v(
+      { parts: "all", topRackOnly: true },
+      "babybuddha-manual",
+      "All parts of your manual breast pump can be flash boiled (for no longer than 60 seconds) and are top-rack dishwasher safe!",
+    ),
     cleaning: v("Flash boil up to 60 seconds, or top-rack dishwasher", "babybuddha-manual", "All parts of your manual breast pump can be flash boiled (for no longer than 60 seconds)"),
     capacity: v({ amount: 4.7, unit: "oz", comparator: "eq" }, "babybuddha-manual", "1 Wide-Neck Bottle (4.7 Ounces)"),
     includedItems: list("babybuddha-manual", [

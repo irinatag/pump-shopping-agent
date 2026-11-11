@@ -6,10 +6,10 @@ import { SimulatedQuoteProvider } from "@/lib/offers/simulated/provider";
 import { SIMULATED_LABEL } from "@/lib/offers/types";
 
 describe("getProductFacts", () => {
-  it("accounts for every attribute exactly once across verified, conflicting, and unknown", () => {
+  it("accounts for every attribute exactly once across verified, inferred, conflicting, and unknown", () => {
     for (const p of products) {
       const f = getProductFacts(p.id);
-      const all = [...f.verified, ...f.conflicting, ...f.unknown].map((x) => x.attribute).sort();
+      const all = [...f.verified, ...f.inferred, ...f.conflicting, ...f.unknown].map((x) => x.attribute).sort();
       expect(all).toEqual([...ATTRIBUTE_KEYS].sort());
     }
   });
@@ -29,8 +29,23 @@ describe("getProductFacts", () => {
     expect(roam.conflicting.map((c) => c.attribute)).toContain("batteryLife");
     expect(roam.verified.map((v) => v.attribute)).not.toContain("batteryLife");
 
-    const s1 = getProductFacts("spectra-s1-plus");
-    expect(s1.unknown.map((u) => u.attribute)).toContain("closedSystem");
+    const sg = getProductFacts("spectra-synergy-gold");
+    expect(sg.unknown.map((u) => u.attribute)).toContain("weight");
+  });
+
+  it("separates inferred facts, with their rationale, from manufacturer-verified facts", () => {
+    const pis = getProductFacts("medela-pump-in-style-pro");
+    const closed = pis.inferred.find((f) => f.attribute === "closedSystem");
+    expect(closed?.value).toBe(true);
+    expect(closed?.rationale).toMatch(/milk barrier/);
+    expect(pis.verified.map((v) => v.attribute)).not.toContain("closedSystem");
+  });
+
+  it("reports the derived classification and flags cross-page citations", () => {
+    expect(getProductFacts("medela-pump-in-style-pro").classification).toMatchObject({ status: "derived", category: "flange-bottle-electric" });
+    expect(getProductFacts("momcozy-m6-mobile-style").classification.status).toBe("unclassified");
+    const fit = getProductFacts("zomee-fit").verified.find((f) => f.attribute === "closedSystem")!;
+    expect(fit.citations.map((c) => c.scope)).toContain("brand-wide");
   });
 
   it("contains no price, coverage, or shipping data", () => {
