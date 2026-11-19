@@ -2,7 +2,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { products, sources } from "@/lib/products";
-import type { ProductAttributeKey } from "@/lib/products/types";
+import { sourceQuotes } from "@/lib/products/evidence";
+import type { Evidence, ProductAttributeKey } from "@/lib/products/types";
 import { listingObservations } from "@/lib/suppliers";
 
 // Opt-in checks against saved source pages:
@@ -48,12 +49,13 @@ describe.skipIf(!dir)("source quotes match saved pages", () => {
     Object.entries(p).flatMap(([attribute, value]) => {
       if (!value || typeof value !== "object" || !("status" in value)) return [];
       const evidence =
-        value.status === "verified" || value.status === "inferred"
+        value.status === "verified" || value.status === "inferred" || value.status === "not-applicable"
           ? value.evidence
           : value.status === "conflicting"
             ? value.candidates.map((c: { evidence: unknown }) => c.evidence)
             : [];
-      return (evidence as { sourceId: string; quote: string }[]).map((e) => ({ product: p.id, attribute, ...e }));
+      // Only verbatim page quotes can be checked against saved pages; research rows are reported separately.
+      return sourceQuotes(evidence as Evidence[]).map((e) => ({ product: p.id, attribute, ...e }));
     }),
   );
 

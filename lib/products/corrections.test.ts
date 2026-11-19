@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { getProductFacts } from "@/lib/grounding";
+import { getProductFacts, isQuoteCitation } from "@/lib/grounding";
+import { sourceQuotes } from "@/lib/products/evidence";
 import { getProduct, getSource } from "@/lib/products";
 import { classifyProduct } from "@/lib/products/classification";
 import type { Attribute } from "@/lib/products/types";
@@ -21,7 +22,7 @@ describe("N-01 Medela Sonata power and runtime", () => {
   it("records both operating modes in the multi-value list, sourced from the instructions for use", () => {
     const ps = verified(sonata.powerSources);
     expect([...ps.value].sort()).toEqual(["built-in-battery", "mains"]);
-    const manualQuotes = ps.evidence.filter((e) => getSource(e.sourceId).url === SONATA_IFU).map((e) => e.quote);
+    const manualQuotes = sourceQuotes(ps.evidence).filter((e) => getSource(e.sourceId).url === SONATA_IFU).map((e) => e.quote);
     expect(getSource("medela-sonata-ifu").kind).toBe("manufacturer-manual");
     expect(manualQuotes).toContain("There are two ways to power your breast pump for your pumping session:");
     expect(manualQuotes.some((q) => /plug power cord into power source/i.test(q))).toBe(true);
@@ -36,7 +37,7 @@ describe("N-01 Medela Sonata power and runtime", () => {
       { amount: 90, unit: "min", comparator: "eq" },
       { amount: 60, unit: "min", comparator: "up-to" },
     ]);
-    expect(b.candidates.every((c) => c.evidence.sourceId === "medela-sonata")).toBe(true);
+    expect(b.candidates.every((c) => sourceQuotes([c.evidence])[0]?.sourceId === "medela-sonata")).toBe(true);
   });
 
   it("is still a flange-and-bottle electric pump", () => {
@@ -79,8 +80,8 @@ describe("N-05 BabyBuddha 3.0 pumping modes", () => {
     ]);
     expect(modes.reduce((n, m) => n + Number(m[2]), 0)).toBe(30);
     expect(s.value).toMatch(/^4 modes, 30 settings/);
-    expect(s.evidence.map((e) => e.quote)).toContain("Choose from four pumping modes and 30 total settings:");
-    expect(s.evidence.map((e) => e.quote)).toContain("Classic Stimulation with 6 levels");
+    expect(sourceQuotes(s.evidence).map((e) => e.quote)).toContain("Choose from four pumping modes and 30 total settings:");
+    expect(sourceQuotes(s.evidence).map((e) => e.quote)).toContain("Classic Stimulation with 6 levels");
   });
 
   it("keeps the 3.0 page's suction range rather than the 2.0's 320 mmHg ceiling", () => {
@@ -94,7 +95,7 @@ describe("grounding reflects the corrections", () => {
     const f = getProductFacts("medela-sonata");
     const ps = f.verified.find((x) => x.attribute === "powerSources")!;
     expect([...(ps.value as string[])].sort()).toEqual(["built-in-battery", "mains"]);
-    expect(ps.citations.some((c) => c.url === SONATA_IFU && c.scope === "this-product")).toBe(true);
+    expect(ps.citations.filter(isQuoteCitation).some((c) => c.url === SONATA_IFU && c.scope === "this-product")).toBe(true);
     expect(f.verified.map((x) => x.attribute)).not.toContain("batteryLife");
     expect(f.conflicting.find((x) => x.attribute === "batteryLife")!.candidates.map((c) => c.value)).toHaveLength(2);
   });

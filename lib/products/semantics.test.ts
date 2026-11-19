@@ -2,13 +2,14 @@ import { describe, expect, it } from "vitest";
 import { getProduct, getSource, products } from "@/lib/products";
 import { ATTRIBUTE_KEYS } from "@/lib/products/build";
 import { classifyProduct } from "@/lib/products/classification";
-import type { Attribute, Comparator, Evidence, Measure, Product } from "@/lib/products/types";
+import { evidenceTexts, sourceQuotes } from "@/lib/products/evidence";
+import type { Attribute, Comparator, Evidence, Measure, Product, SourceQuote, WeightScope } from "@/lib/products/types";
 
 // Automated checks that stored values follow the attribute definitions in docs/DATA.md.
 
 type Known<T> = Extract<Attribute<T>, { value: T }>;
 const known = <T>(a: Attribute<T>): a is Known<T> => a.status === "verified" || a.status === "inferred";
-const quotes = (a: Known<unknown>) => a.evidence.map((e) => e.quote);
+const quotes = (a: Known<unknown>) => a.evidence.flatMap(evidenceTexts);
 const clean = (s: string) => s.replace(/[®™]/g, "").replace(/[‘’]/g, "'");
 
 // ---- numbers, units, qualifiers -------------------------------------------------
@@ -85,14 +86,16 @@ describe("numeric values", () => {
     "%s appears in a quote with its unit and a matching qualifier",
     (_label, { m, ev, inferred }) => {
       if (inferred && /convert/i.test(inferred)) return; // documented unit conversion
-      const located = ev.map((e) => ({ e, at: locate(m, e.quote) })).filter((x) => x.at >= 0);
-      expect(located.length, `amount and unit not found in: ${ev.map((e) => e.quote).join(" | ")}`).toBeGreaterThan(0);
+      // A research row is checked against its stated value; an owner decision has no numeric text.
+      const texts = ev.flatMap((e) => (e.kind === "research" ? [e.stated] : e.kind === "owner-decision" ? [] : [e.quote]));
+      const located = texts.map((t) => ({ t, at: locate(m, t) })).filter((x) => x.at >= 0);
+      expect(located.length, `amount and unit not found in: ${texts.join(" | ")}`).toBeGreaterThan(0);
 
-      const windowed = new Set(located.flatMap(({ e, at }) => [...windowQualifiers(e.quote, at)]));
+      const windowed = new Set(located.flatMap(({ t, at }) => [...windowQualifiers(t, at)]));
       if (m.comparator === "eq") {
         expect([...windowed], "stored as exact, but the source qualifies the number").toEqual([]);
       } else {
-        const anywhere = ev.some((e) => QUALIFIERS.find(([c]) => c === m.comparator)?.[1].test(clean(e.quote)) || /\d\+/.test(e.quote));
+        const anywhere = texts.some((t) => QUALIFIERS.find(([c]) => c === m.comparator)?.[1].test(clean(t)) || /\d\+/.test(t));
         expect(windowed.has(m.comparator) || anywhere, `stored "${m.comparator}" without that qualifier in the source`).toBe(true);
       }
     },
@@ -150,7 +153,17 @@ describe("attribute semantics", () => {
   });
 
   it("weight scope is only specific when the source says what was weighed", () => {
-    const scopeWords = { motor: /pump|motor|unit/i, "per-cup": /cup/i, "single-wearable-unit": /each|per/i, pair: /pair|both/i, kit: /system|kit|package/i } as const;
+    const scopeWords: Record<Exclude<WeightScope, "unspecified">, RegExp> = {
+      motor: /pump|motor|unit/i,
+      "per-cup": /cup/i,
+      "per-collector": /collector/i,
+      "single-wearable-unit": /each|per/i,
+      pair: /pair|both/i,
+      kit: /system|kit|package/i,
+      "assembled-pump": /assembled/i,
+      "with-accessories": /accessor/i,
+      "whole-product": /overall|total/i,
+    };
     for (const p of products) {
       const w = p.weight;
       if (!known(w) || w.value.scope === "unspecified") continue;
@@ -172,12 +185,12 @@ describe("attribute semantics", () => {
 
 // ---- provenance: model, variant, cross-product --------------------------------------
 
-function evidenceOf(p: Product): { k: string; e: Evidence }[] {
+/** Verbatim page/manual quotes of a product; research rows and owner decisions carry no page provenance. */
+function evidenceOf(p: Product): { k: string; e: SourceQuote }[] {
   return ATTRIBUTE_KEYS.flatMap((k) => {
     const a = p[k] as Attribute<unknown>;
-    if (known(a)) return a.evidence.map((e) => ({ k, e }));
-    if (a.status === "conflicting") return a.candidates.map((c) => ({ k, e: c.evidence }));
-    return [];
+    const all: Evidence[] = known(a) ? a.evidence : a.status === "conflicting" ? a.candidates.map((c) => c.evidence) : [];
+    return sourceQuotes(all).map((e) => ({ k, e }));
   });
 }
 

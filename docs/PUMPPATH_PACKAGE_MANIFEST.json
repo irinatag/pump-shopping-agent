@@ -1,0 +1,53 @@
+{
+ "generated": "2026-11-12 17:52 UTC",
+ "baseline": "main@ae50454",
+ "files": {
+  "PUMPPATH_RESEARCH_FINAL.csv": {
+   "rows": 828,
+   "sha256": "7614b1153138833ac95b166f00990afc0acc817b169af50368ee62bcc4915907",
+   "byAction": {
+    "Update": 302,
+    "Add new attribute": 172,
+    "Confirm (no value change)": 50,
+    "Out of scope (owner decision)": 202,
+    "Catalog value kept, not re-checked (owner decision)": 86,
+    "Update (conflict resolved by owner rule; both values kept in limitations)": 8,
+    "Note for maintainers (not an attribute update)": 8
+   },
+   "byProposedStatus": {
+    "verified": 351,
+    "inferred": 141,
+    "unknown": 202,
+    "": 86,
+    "not-applicable": 48
+   },
+   "byEvidenceClass": {
+    "Manufacturer fact": 333,
+    "Derived from catalog facts": 142,
+    "n/a": 288,
+    "Retailer or supplier listing": 9,
+    "Owner-verified fact": 56
+   }
+  },
+  "PUMPPATH_CONSUMER_RATINGS.csv": {
+   "rows": 74,
+   "sha256": "1ed8bf475ae28fbc970180e523eb6f476a569d32f558c4b34374a37176d5b120",
+   "noise": {
+    "Quiet": 47,
+    "Noticeable": 6,
+    "Not applicable": 11,
+    "Unknown": 9,
+    "Moderate": 1
+   },
+   "cleaning": {
+    "Easy to clean": 50,
+    "Requires more effort": 9,
+    "Unknown": 15
+   },
+   "dishwasher": {
+    "Dishwasher-safe parts": 57,
+    "Hand-wash only": 17
+   }
+  }
+ }
+}

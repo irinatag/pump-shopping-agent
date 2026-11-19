@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getProduct, products, sources } from "@/lib/products";
 import { ATTRIBUTE_KEYS } from "@/lib/products/build";
 import { classifyProduct } from "@/lib/products/classification";
+import { sourceQuotes } from "@/lib/products/evidence";
 import type { Attribute, PumpCategory } from "@/lib/products/types";
 
 const unique = (xs: string[]) => new Set(xs).size === xs.length;
@@ -60,7 +61,7 @@ describe("product catalog", () => {
     for (const p of products) {
       for (const [key, a] of attributes(p)) {
         expect(a, `${p.id}.${key}`).toBeDefined();
-        expect(["verified", "inferred", "conflicting", "unknown"]).toContain(a.status);
+        expect(["verified", "inferred", "conflicting", "not-applicable", "unknown"]).toContain(a.status);
       }
     }
   });
@@ -90,19 +91,27 @@ describe("source provenance", () => {
       }
       for (const [key, a] of attributes(p)) {
         const evidence =
-          a.status === "verified" || a.status === "inferred" ? a.evidence : a.status === "conflicting" ? a.candidates.map((c) => c.evidence) : [];
-        for (const e of evidence) expect(p.sourceIds, `${p.id}.${key} cites ${e.sourceId}`).toContain(e.sourceId);
+          a.status === "verified" || a.status === "inferred" || a.status === "not-applicable"
+            ? a.evidence
+            : a.status === "conflicting"
+              ? a.candidates.map((c) => c.evidence)
+              : [];
+        for (const e of sourceQuotes(evidence)) expect(p.sourceIds, `${p.id}.${key} cites ${e.sourceId}`).toContain(e.sourceId);
       }
     }
     expect([...declared].filter((id) => !used.has(id))).toEqual([]);
   });
 
-  it("supports every verified and inferred attribute with at least one non-empty verbatim quote", () => {
+  it("supports every verified, inferred and not-applicable attribute with non-empty evidence", () => {
     for (const p of products) {
       for (const [key, a] of attributes(p)) {
-        if (a.status !== "verified" && a.status !== "inferred") continue;
+        if (a.status !== "verified" && a.status !== "inferred" && a.status !== "not-applicable") continue;
         expect(a.evidence.length, `${p.id}.${key}`).toBeGreaterThan(0);
-        for (const e of a.evidence) expect(e.quote.trim().length, `${p.id}.${key}`).toBeGreaterThan(0);
+        for (const e of a.evidence) {
+          // A verbatim quote; or a research row with its stated value and summary; or an owner decision's statement.
+          const text = e.kind === "research" ? e.stated && e.summary : e.kind === "owner-decision" ? e.statement : e.quote;
+          expect(text.trim().length, `${p.id}.${key}`).toBeGreaterThan(0);
+        }
       }
     }
   });

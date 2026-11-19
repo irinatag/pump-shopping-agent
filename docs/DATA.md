@@ -31,21 +31,45 @@ Claude reads all three only through `lib/grounding.ts`, which keeps product fact
 
 ### Attribute statuses
 
-Every product has the same 19 attributes. Each is exactly one of:
+Every product has the same 25 attributes. Each is exactly one of:
 
 | Status | Meaning | Shown to users / Claude as |
 |---|---|---|
 | `verified` | One or more verbatim quotes **state** the value. | Manufacturer statement, with source |
 | `inferred` | The value **follows** from quoted evidence by a stated `rationale`, but the source does not say it outright (e.g. "milk barrier" → closed system; included AC adapter on a pump with no battery → mains power; 3 lb 6 oz → 54 oz). | PumpPath interpretation, with rationale |
 | `conflicting` | Two or more sourced candidate values and a note. Never resolved by picking one. | Not verified; both candidates shown |
+| `not-applicable` | The attribute does not apply, with a reason (e.g. battery runtime of a manual pump). | Not applicable, with the reason |
 | `unknown` | No value. A note explains why when the page has a related signal. | Not verified |
 
 ### Evidence provenance
 
-Each evidence item is `{ sourceId, quote, scope?, section? }`:
+A source quote is `{ sourceId, quote, scope?, section? }` (research and owner-decision evidence: see below):
 
 - `scope` — `this-product` (default; the model's own page describes it), `brand-wide` (a manufacturer statement covering all its pumps, e.g. Zomee's "All Zomee breast pumps … have a fully enclosed, anti-backflow system" on the Z2 page), or `other-product` (a statement about this model on another model's page, e.g. "tube-free" for Elvie Pump on the Elvie Stride page). Evidence from any page other than the product's own must carry `brand-wide` or `other-product`. A source of kind `manufacturer-manual` listed in a product's `sourceIds` is that model's own instructions for use (linked from its product page) and counts as its own document.
 - `section` — `product-content` (default), `page-title`, or `page-metadata` (the model's own `<title>` or meta description, e.g. Symphony PLUS "hospital-grade, multi-user").
+
+### Research-package provenance (schema added 2026-11-13; import pending)
+
+The research package of 2026-11-12 (`docs/PUMPPATH_RESEARCH_FINAL.csv`, report and manifest beside it) is converted by `scripts/catalog/import_research.py` into an overlay, `lib/products/data/research-2026-11-12.ts`, applied in `lib/products/research.ts` by replacing whole attributes (re-applying changes nothing; removing the overlay restores the hand-written catalog). `docs/research-import/LEDGER.json` records every CSV row with its disposition and the actual catalog before/after; `DRY_RUN.md` summarizes it. The script checks the CSV hashes against the manifest and never writes the CSVs; `--check` fails if any output is stale.
+
+Evidence is a union; every kind stays distinguishable to users and Claude:
+
+| `kind` | What it is | Can support |
+|---|---|---|
+| `source-quote` (default) | A verbatim quote from a manufacturer page or the model's own manual (`sourceId`, `quote`, `scope`, `section`) | verified, inferred, conflicting |
+| `research` | One package row: `evidenceClass` (`manufacturer`, `owner-verified`, `retailer-listing`, `derived-from-catalog`), the row's `stated` proposedValue verbatim, `summary`, optional ≤14-word `keyQuote` with its `quoteStatus`, cited `links` each tagged by site type, `confidence`, `limitations`, `package` and `csvLine` | as the row's `proposedStatus` says |
+| `owner-decision` | A decision the owner made during integration, dated, naming the row it supersedes | verified |
+
+- **Working-values policy (owner, 2026-11-19).** Package values, `inferred` ones included, are the catalog's working values and are not re-checked attribute by attribute; some may be wrong, and that is accepted for now. Their status and provenance still say what they are: an `inferred` value stays labelled inferred, never manufacturer-verified.
+- **Owner-verified facts are `verified`.** Owner verification is a verification pathway of its own, distinct from manufacturer verification: the value is verified, its provenance says the PumpPath owner verified it, and it is never described as manufacturer-confirmed.
+- **Rule-resolved conflicts are `inferred`** with `ruleResolution: { basis, alternatives }`: the selected value, every other value with its evidence, and the rule basis (`weight-of-evidence` or `tie-conservative`). The owner-approved rule does not make the conflicting claims owner-verified.
+- **`not-applicable`** is its own status with a `reason` (`manual-pump`, `plug-in-only`, `plug-in-version`, `replaceable-batteries`); it is never shown as unknown.
+- **Maintainer notes** are kept beside the product (`maintainerNotes`), never in an attribute.
+- **Site types** for cited links: `manufacturer` (brand domains and their subdomains), `file-host`, `retailer`, `manual-mirror`, `press-release`, `forum-or-blog`, `regional-site`. Only manufacturer hosts are approved catalog sources; other links are kept as cited. Research quotes are not checked against saved pages (`verify-sources` covers `source-quote` evidence only).
+
+New value conventions: `Measure.max` (upper end of a stated range); `Weight.scope` adds `per-collector`, `assembled-pump`, `with-accessories`, `whole-product`; `Weight.plus` (compound figure, "2 lbs 13 oz"); `Weight.components` (further published weights, "plus 130 g per milk collector"); `Capacity.scope` (`per-cup`, `per-container`, `per-collector`); `CollectionType` adds `kit-sold-separately`; `HandsFree` adds `no`; `DishwasherSafety` adds `label` (`dishwasher-safe-parts` / `hand-wash-only`), `parts: "none"` and `detail`. New attributes: `portabilityClass` (`portable` / `stationary`, separate from the `portability` trait list), `partsToClean`, `topRackOnly`, `notWashable`, `handWashRecommended`, `cycleRestriction` (rack and cycle are separate). A weight with no stated scope stays `unspecified`.
+
+Consumer ratings (`lib/ratings/`) are a separate domain: every column of `PUMPPATH_CONSUMER_RATINGS.csv` as supplied. Their dishwasher column duplicates the catalog's label and never overrides it.
 
 ### Classification model
 
@@ -75,7 +99,7 @@ Current results: flange-and-bottle electric 24, wearable 23, hands-free electric
 | Attribute | Definition |
 |---|---|
 | `handsFree` | `as-sold` — hands-free with what is in the box (in-bra unit, included in-bra cups, or an included pumping bra). `with-accessories` — hands-free only with separately sold items (pumping bra, bustier, cups); evidence must name the accessory. Unknown when not stated (e.g. Willow Wave: worn in-bra but squeezed by hand). A wearable described only as "wearable" is `as-sold` **inferred**. |
-| `powerSources` | Modes the pump **operates** in: `mains`, `built-in-battery`, `aa-batteries`, `battery-pack`, `none`. An included charger or "power adaptor" for a rechargeable pump is **not** `mains`. `mains` is verified only when the source mentions plugging in / AC / outlet / cord; it is inferred when an included adapter is the only power source listed and no battery is mentioned. |
+| `powerSources` | Modes the pump **operates** in: `mains`, `built-in-battery`, `aa-batteries`, `battery-pack`, `none`. `mains` means the pump can **pump while plugged into wall power** (directly or through its adapter); an adapter that only charges a rechargeable pump is **not** `mains`. Hand-written records: `mains` is verified only when the source mentions plugging in / AC / outlet / cord; it is inferred when an included adapter is the only power source listed and no battery is mentioned. Research-package values (including owner-verified "runs while plugged in" facts) are accepted as stated; see the working-values policy below. |
 | `batteryLife` | Pumping **duration** per charge in minutes (hours converted ×60). |
 | `batterySessions` | Pumping **sessions** per charge, recorded only as the source states them — never converted to or from minutes. Ranges ("5–6 sessions") are stored as `up-to` the top of the range. |
 | `weight` | `amount` + `unit` as stated, and `scope`: `motor` (pump/motor/main unit), `kit`, `single-wearable-unit` ("each"), `per-cup`, `pair`, or `unspecified` when the source does not say what was weighed. |

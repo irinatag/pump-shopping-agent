@@ -1,25 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { buildGroundingContext, getProductFacts, GROUNDING_RULES } from "@/lib/grounding";
+import { buildGroundingContext, getProductFacts, GROUNDING_RULES, isQuoteCitation } from "@/lib/grounding";
 import { getProduct, products, sources } from "@/lib/products";
 import { ATTRIBUTE_KEYS } from "@/lib/products/build";
 import { SimulatedQuoteProvider } from "@/lib/offers/simulated/provider";
 import { SIMULATED_LABEL } from "@/lib/offers/types";
 
 describe("getProductFacts", () => {
-  it("accounts for every attribute exactly once across verified, inferred, conflicting, and unknown", () => {
+  it("accounts for every attribute exactly once across verified, inferred, conflicting, not applicable and unknown", () => {
     for (const p of products) {
       const f = getProductFacts(p.id);
-      const all = [...f.verified, ...f.inferred, ...f.conflicting, ...f.unknown].map((x) => x.attribute).sort();
+      const all = [...f.verified, ...f.inferred, ...f.conflicting, ...f.notApplicable, ...f.unknown].map((x) => x.attribute).sort();
       expect(all).toEqual([...ATTRIBUTE_KEYS].sort());
     }
   });
 
-  it("only exposes verified values with citations that resolve to catalog sources", () => {
+  it("only exposes verified values with citations: quotes resolve to catalog sources; research rows name their class", () => {
     const urls = new Set(sources.map((s) => s.url));
     for (const p of products) {
       for (const fact of getProductFacts(p.id).verified) {
         expect(fact.citations.length).toBeGreaterThan(0);
-        for (const c of fact.citations) expect(urls).toContain(c.url);
+        for (const c of fact.citations) {
+          if (isQuoteCitation(c)) expect(urls).toContain(c.url);
+          else if (c.kind === "research") expect(["manufacturer", "owner-verified"]).toContain(c.evidenceClass);
+        }
       }
     }
   });
@@ -45,7 +48,7 @@ describe("getProductFacts", () => {
     expect(getProductFacts("medela-pump-in-style-pro").classification).toMatchObject({ status: "derived", category: "flange-bottle-electric" });
     expect(getProductFacts("momcozy-m6-mobile-style").classification.status).toBe("unclassified");
     const fit = getProductFacts("zomee-fit").verified.find((f) => f.attribute === "closedSystem")!;
-    expect(fit.citations.map((c) => c.scope)).toContain("brand-wide");
+    expect(fit.citations.filter(isQuoteCitation).map((c) => c.scope)).toContain("brand-wide");
   });
 
   it("contains no price, coverage, or shipping data", () => {
