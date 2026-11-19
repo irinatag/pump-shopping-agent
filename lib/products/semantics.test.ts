@@ -1,14 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { getProduct, getSource, products } from "@/lib/products";
+import { baseProducts, getSource, products } from "@/lib/products";
 import { ATTRIBUTE_KEYS } from "@/lib/products/build";
 import { classifyProduct } from "@/lib/products/classification";
-import type { Attribute, Comparator, Evidence, Measure, Product } from "@/lib/products/types";
+import { evidenceTexts, sourceQuotes } from "@/lib/products/evidence";
+import type { Attribute, Comparator, Evidence, Measure, Product, SourceQuote, WeightScope } from "@/lib/products/types";
 
 // Automated checks that stored values follow the attribute definitions in docs/DATA.md.
+// Wording checks (a value must match its quote's wording) are rules for the hand-written records and
+// run on `baseProducts`. Research-package values are accepted as stated (docs/DATA.md, working-values
+// policy) and are checked by research-import.test.ts. Structural checks run on the applied catalog.
+
+const getBase = (id: string) => baseProducts.find((p) => p.id === id)!;
 
 type Known<T> = Extract<Attribute<T>, { value: T }>;
 const known = <T>(a: Attribute<T>): a is Known<T> => a.status === "verified" || a.status === "inferred";
-const quotes = (a: Known<unknown>) => a.evidence.map((e) => e.quote);
+const quotes = (a: Known<unknown>) => a.evidence.flatMap(evidenceTexts);
 const clean = (s: string) => s.replace(/[®™]/g, "").replace(/[‘’]/g, "'");
 
 // ---- numbers, units, qualifiers -------------------------------------------------
@@ -68,7 +74,7 @@ function windowQualifiers(quote: string, at: number): Set<Comparator> {
 const MEASURES = ["batteryLife", "batterySessions", "maxSuction", "noise", "capacity", "weight"] as const;
 
 function measureEntries() {
-  return products.flatMap((p) =>
+  return baseProducts.flatMap((p) =>
     MEASURES.flatMap((k) => {
       const a = p[k] as Attribute<Measure<string>>;
       if (known(a)) return [{ p, k, m: a.value, ev: a.evidence, inferred: a.status === "inferred" ? a.rationale : null }];
@@ -85,14 +91,16 @@ describe("numeric values", () => {
     "%s appears in a quote with its unit and a matching qualifier",
     (_label, { m, ev, inferred }) => {
       if (inferred && /convert/i.test(inferred)) return; // documented unit conversion
-      const located = ev.map((e) => ({ e, at: locate(m, e.quote) })).filter((x) => x.at >= 0);
-      expect(located.length, `amount and unit not found in: ${ev.map((e) => e.quote).join(" | ")}`).toBeGreaterThan(0);
+      // A research row is checked against its stated value; an owner decision has no numeric text.
+      const texts = ev.flatMap((e) => (e.kind === "research" ? [e.stated] : e.kind === "owner-decision" ? [] : [e.quote]));
+      const located = texts.map((t) => ({ t, at: locate(m, t) })).filter((x) => x.at >= 0);
+      expect(located.length, `amount and unit not found in: ${texts.join(" | ")}`).toBeGreaterThan(0);
 
-      const windowed = new Set(located.flatMap(({ e, at }) => [...windowQualifiers(e.quote, at)]));
+      const windowed = new Set(located.flatMap(({ t, at }) => [...windowQualifiers(t, at)]));
       if (m.comparator === "eq") {
         expect([...windowed], "stored as exact, but the source qualifies the number").toEqual([]);
       } else {
-        const anywhere = ev.some((e) => QUALIFIERS.find(([c]) => c === m.comparator)?.[1].test(clean(e.quote)) || /\d\+/.test(e.quote));
+        const anywhere = texts.some((t) => QUALIFIERS.find(([c]) => c === m.comparator)?.[1].test(clean(t)) || /\d\+/.test(t));
         expect(windowed.has(m.comparator) || anywhere, `stored "${m.comparator}" without that qualifier in the source`).toBe(true);
       }
     },
@@ -105,7 +113,7 @@ const allMatch = (a: Known<unknown>, rx: RegExp) => quotes(a).some((q) => rx.tes
 
 describe("attribute semantics", () => {
   it("hands-free 'with-accessories' cites the accessory; 'as-sold' cites hands-free or in-bra wording, or is inferred from in-bra collection", () => {
-    for (const p of products) {
+    for (const p of baseProducts) {
       const h = p.handsFree;
       if (!known(h)) continue;
       if (h.value === "with-accessories") expect(allMatch(h, /separately|bra|bustier|purchase|cups/i), p.id).toBe(true);
@@ -119,7 +127,7 @@ describe("attribute semantics", () => {
   });
 
   it("power sources cite operating evidence: mains needs plug/outlet/AC/cord wording unless inferred", () => {
-    for (const p of products) {
+    for (const p of baseProducts) {
       const ps = p.powerSources;
       if (!known(ps)) continue;
       if (ps.value.includes("mains") && ps.status === "verified") expect(allMatch(ps, /plug|outlet|\bAC\b|cord|wall|mains/i), p.id).toBe(true);
@@ -132,14 +140,14 @@ describe("attribute semantics", () => {
   });
 
   it("battery duration and pumping sessions are kept apart", () => {
-    for (const p of products) {
+    for (const p of baseProducts) {
       if (known(p.batteryLife)) expect(allMatch(p.batteryLife, /\d\s?(h|hrs?|hours?|min|mins|minutes?)\b|(two|three|four) hours/i), p.id).toBe(true);
       if (known(p.batterySessions)) expect(allMatch(p.batterySessions, /se+s+ions?/i), p.id).toBe(true);
     }
   });
 
   it("dishwasher scope and top-rack flags match the source wording", () => {
-    for (const p of products) {
+    for (const p of baseProducts) {
       const d = p.dishwasherSafe;
       if (!known(d)) continue;
       expect(allMatch(d, /dishwasher/i), p.id).toBe(true);
@@ -150,8 +158,18 @@ describe("attribute semantics", () => {
   });
 
   it("weight scope is only specific when the source says what was weighed", () => {
-    const scopeWords = { motor: /pump|motor|unit/i, "per-cup": /cup/i, "single-wearable-unit": /each|per/i, pair: /pair|both/i, kit: /system|kit|package/i } as const;
-    for (const p of products) {
+    const scopeWords: Record<Exclude<WeightScope, "unspecified">, RegExp> = {
+      motor: /pump|motor|unit/i,
+      "per-cup": /cup/i,
+      "per-collector": /collector/i,
+      "single-wearable-unit": /each|per/i,
+      pair: /pair|both/i,
+      kit: /system|kit|package/i,
+      "assembled-pump": /assembled/i,
+      "with-accessories": /accessor/i,
+      "whole-product": /overall|total/i,
+    };
+    for (const p of baseProducts) {
       const w = p.weight;
       if (!known(w) || w.value.scope === "unspecified") continue;
       expect(allMatch(w, scopeWords[w.value.scope]), `${p.id} scope ${w.value.scope}`).toBe(true);
@@ -172,12 +190,12 @@ describe("attribute semantics", () => {
 
 // ---- provenance: model, variant, cross-product --------------------------------------
 
-function evidenceOf(p: Product): { k: string; e: Evidence }[] {
+/** Verbatim page/manual quotes of a product; research rows and owner decisions carry no page provenance. */
+function evidenceOf(p: Product): { k: string; e: SourceQuote }[] {
   return ATTRIBUTE_KEYS.flatMap((k) => {
     const a = p[k] as Attribute<unknown>;
-    if (known(a)) return a.evidence.map((e) => ({ k, e }));
-    if (a.status === "conflicting") return a.candidates.map((c) => ({ k, e: c.evidence }));
-    return [];
+    const all: Evidence[] = known(a) ? a.evidence : a.status === "conflicting" ? a.candidates.map((c) => c.evidence) : [];
+    return sourceQuotes(all).map((e) => ({ k, e }));
   });
 }
 
@@ -212,8 +230,8 @@ describe("evidence provenance", () => {
   });
 
   it("keeps variant-specific evidence on the right record", () => {
-    for (const variant of products.filter((p) => p.variantOf)) {
-      const base = getProduct(variant.variantOf!);
+    for (const variant of baseProducts.filter((p) => p.variantOf)) {
+      const base = getBase(variant.variantOf!);
       const marker = clean(variant.model).replace(clean(base.model).replace(/\s*\(.*\)$/, ""), "").trim().toLowerCase(); // e.g. "with battery"
       for (const { k, e } of evidenceOf(base)) expect(clean(e.quote).toLowerCase().includes(marker), `${base.id}.${k} cites variant text`).toBe(false);
       for (const k of ATTRIBUTE_KEYS) {
@@ -230,7 +248,7 @@ describe("evidence provenance", () => {
 describe("derived classification", () => {
   it("classifies every product except those whose configuration is not established", () => {
     const unclassified = products.filter((p) => classifyProduct(p).status !== "derived").map((p) => p.id);
-    expect(unclassified.sort()).toEqual(["momcozy-m6-mobile-style"]);
+    expect(unclassified.sort()).toEqual([]);
   });
 
   it("never classifies from a portability feature alone", () => {

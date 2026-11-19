@@ -1,7 +1,7 @@
 import { ATTRIBUTE_KEYS } from "@/lib/products/build";
 import { classifyProduct, type Classification } from "@/lib/products/classification";
 import { getProduct, getSource } from "@/lib/products";
-import type { Attribute, Evidence, ProductAttributeKey } from "@/lib/products/types";
+import { isSourceQuote, type Attribute, type Evidence, type NotApplicableReason, type OwnerDecision, type ResearchEvidence, type SourceQuote, type ProductAttributeKey } from "@/lib/products/types";
 import { getSupplier } from "@/lib/suppliers";
 import type { Quote } from "@/lib/offers/types";
 
@@ -18,14 +18,24 @@ export const GROUNDING_RULES = [
   "Every offer carries a provenance label. Simulated offers must be described as simulated, never as real insurance coverage.",
 ] as const;
 
-export interface FactCitation {
+/** A verbatim quote from a manufacturer page or manual. */
+export interface QuoteCitation {
   url: string;
   publisher: string;
   accessedOn: string;
   quote: string;
-  scope: NonNullable<Evidence["scope"]>;
-  section: NonNullable<Evidence["section"]>;
+  scope: NonNullable<SourceQuote["scope"]>;
+  section: NonNullable<SourceQuote["section"]>;
 }
+
+/** A research-package row (paraphrase, owner verification, retailer listing or derivation). Not a page quote. */
+export type ResearchCitation = Omit<ResearchEvidence, "kind"> & { kind: "research" };
+
+export type DecisionCitation = Omit<OwnerDecision, "kind"> & { kind: "owner-decision" };
+
+export type FactCitation = QuoteCitation | ResearchCitation | DecisionCitation;
+
+export const isQuoteCitation = (c: FactCitation): c is QuoteCitation => !("kind" in c);
 
 export interface ProductFacts {
   productId: string;
@@ -33,8 +43,16 @@ export interface ProductFacts {
   model: string;
   classification: Classification;
   verified: { attribute: ProductAttributeKey; value: unknown; citations: FactCitation[] }[];
-  inferred: { attribute: ProductAttributeKey; value: unknown; rationale: string; citations: FactCitation[] }[];
+  inferred: {
+    attribute: ProductAttributeKey;
+    value: unknown;
+    rationale: string;
+    citations: FactCitation[];
+    /** Present when an owner-approved rule settled a manufacturer conflict; the other values stay listed. */
+    ruleResolution?: { basis: string; alternatives: { value: unknown; citations: FactCitation[] }[] };
+  }[];
   conflicting: { attribute: ProductAttributeKey; note: string; candidates: { value: unknown; citation: FactCitation }[] }[];
+  notApplicable: { attribute: ProductAttributeKey; reason: NotApplicableReason; citations: FactCitation[] }[];
   unknown: { attribute: ProductAttributeKey; note?: string }[];
 }
 
@@ -57,6 +75,9 @@ export interface GroundingContext {
 }
 
 function cite(e: Evidence): FactCitation {
+  if (e.kind === "research") return { ...e };
+  if (e.kind === "owner-decision") return { ...e };
+  if (!isSourceQuote(e)) throw new Error("unhandled evidence kind");
   const s = getSource(e.sourceId);
   return {
     url: s.url,
@@ -78,6 +99,7 @@ export function getProductFacts(productId: string): ProductFacts {
     verified: [],
     inferred: [],
     conflicting: [],
+    notApplicable: [],
     unknown: [],
   };
 
@@ -86,13 +108,22 @@ export function getProductFacts(productId: string): ProductFacts {
     if (a.status === "verified") {
       facts.verified.push({ attribute, value: a.value, citations: a.evidence.map(cite) });
     } else if (a.status === "inferred") {
-      facts.inferred.push({ attribute, value: a.value, rationale: a.rationale, citations: a.evidence.map(cite) });
+      const r = a.ruleResolution;
+      facts.inferred.push({
+        attribute,
+        value: a.value,
+        rationale: a.rationale,
+        citations: a.evidence.map(cite),
+        ...(r && { ruleResolution: { basis: r.basis, alternatives: r.alternatives.map((x) => ({ value: x.value, citations: x.evidence.map(cite) })) } }),
+      });
     } else if (a.status === "conflicting") {
       facts.conflicting.push({
         attribute,
         note: a.note,
         candidates: a.candidates.map((c) => ({ value: c.value, citation: cite(c.evidence) })),
       });
+    } else if (a.status === "not-applicable") {
+      facts.notApplicable.push({ attribute, reason: a.reason, citations: a.evidence.map(cite) });
     } else {
       facts.unknown.push(a.note ? { attribute, note: a.note } : { attribute });
     }

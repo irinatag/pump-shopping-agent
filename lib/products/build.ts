@@ -1,4 +1,4 @@
-import type { Attribute, Evidence, Product, ProductAttributeKey } from "@/lib/products/types";
+import type { Attribute, Evidence, Product, ProductAttributeKey, SourceQuote } from "@/lib/products/types";
 
 // Small helpers so catalog files read as "value + where it came from".
 
@@ -22,10 +22,17 @@ export const ATTRIBUTE_KEYS: ProductAttributeKey[] = [
   "capacity",
   "includedItems",
   "features",
+  "portabilityClass",
+  "partsToClean",
+  "topRackOnly",
+  "notWashable",
+  "handWashRecommended",
+  "cycleRestriction",
 ];
 
 type Quote = string | Evidence;
 const toEvidence = (sourceId: string, q: Quote): Evidence => (typeof q === "string" ? { sourceId, quote: q } : q);
+const sourceQuote = (sourceId: string, quote: string): SourceQuote => ({ sourceId, quote });
 
 /** Verified value supported by one or more verbatim quotes from `sourceId` (or explicit Evidence objects). */
 export function v<T>(value: T, sourceId: string, ...quotes: Quote[]): Attribute<T> {
@@ -40,12 +47,12 @@ export function inferred<T>(value: T, rationale: string, sourceId: string, ...qu
 }
 
 /** Quote from the model's own page title or metadata rather than body copy. */
-export const titleQuote = (sourceId: string, quote: string): Evidence => ({ sourceId, quote, section: "page-title" });
-export const metaQuote = (sourceId: string, quote: string): Evidence => ({ sourceId, quote, section: "page-metadata" });
+export const titleQuote = (sourceId: string, quote: string): SourceQuote => ({ sourceId, quote, section: "page-title" });
+export const metaQuote = (sourceId: string, quote: string): SourceQuote => ({ sourceId, quote, section: "page-metadata" });
 /** Manufacturer statement covering all of its pumps, made on another page. */
-export const brandWide = (sourceId: string, quote: string): Evidence => ({ sourceId, quote, scope: "brand-wide" });
+export const brandWide = (sourceId: string, quote: string): SourceQuote => ({ sourceId, quote, scope: "brand-wide" });
 /** Statement about this model made on a different product's page. */
-export const otherProduct = (sourceId: string, quote: string): Evidence => ({ sourceId, quote, scope: "other-product" });
+export const otherProduct = (sourceId: string, quote: string): SourceQuote => ({ sourceId, quote, scope: "other-product" });
 
 /** List whose items are themselves verbatim text from the source. */
 export function list(sourceId: string, items: string[]): Attribute<string[]> {
@@ -56,7 +63,7 @@ export function conflict<T>(note: string, ...candidates: [T, string, string][]):
   return {
     status: "conflicting",
     note,
-    candidates: candidates.map(([value, sourceId, quote]) => ({ value, evidence: { sourceId, quote } })),
+    candidates: candidates.map(([value, sourceId, quote]) => ({ value, evidence: sourceQuote(sourceId, quote) })),
   };
 }
 

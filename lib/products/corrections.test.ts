@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { getProductFacts } from "@/lib/grounding";
-import { getProduct, getSource } from "@/lib/products";
+import { getProductFacts, isQuoteCitation } from "@/lib/grounding";
+import { sourceQuotes } from "@/lib/products/evidence";
+import { baseProducts, getProduct, getSource } from "@/lib/products";
 import { classifyProduct } from "@/lib/products/classification";
 import type { Attribute } from "@/lib/products/types";
 
@@ -21,22 +22,29 @@ describe("N-01 Medela Sonata power and runtime", () => {
   it("records both operating modes in the multi-value list, sourced from the instructions for use", () => {
     const ps = verified(sonata.powerSources);
     expect([...ps.value].sort()).toEqual(["built-in-battery", "mains"]);
-    const manualQuotes = ps.evidence.filter((e) => getSource(e.sourceId).url === SONATA_IFU).map((e) => e.quote);
+    const manualQuotes = sourceQuotes(ps.evidence).filter((e) => getSource(e.sourceId).url === SONATA_IFU).map((e) => e.quote);
     expect(getSource("medela-sonata-ifu").kind).toBe("manufacturer-manual");
     expect(manualQuotes).toContain("There are two ways to power your breast pump for your pumping session:");
     expect(manualQuotes.some((q) => /plug power cord into power source/i.test(q))).toBe(true);
     expect(manualQuotes.some((q) => /rechargeable battery/i.test(q))).toBe(true);
   });
 
-  it("marks battery runtime conflicting (1.5 hours vs up to an hour) instead of choosing one", () => {
-    const b = sonata.batteryLife;
+  it("recorded battery runtime as conflicting (1.5 hours vs up to an hour) in the hand-written record", () => {
+    const b = baseProducts.find((p) => p.id === "medela-sonata")!.batteryLife;
     expect(b.status).toBe("conflicting");
     if (b.status !== "conflicting") return;
     expect(b.candidates.map((c) => c.value)).toEqual([
       { amount: 90, unit: "min", comparator: "eq" },
       { amount: 60, unit: "min", comparator: "up-to" },
     ]);
-    expect(b.candidates.every((c) => c.evidence.sourceId === "medela-sonata")).toBe(true);
+    expect(b.candidates.every((c) => sourceQuotes([c.evidence])[0]?.sourceId === "medela-sonata")).toBe(true);
+  });
+
+  it("has that conflict settled by the owner rule (2026-11-12 package), keeping 1.5 hours as the alternative", () => {
+    const b = sonata.batteryLife;
+    expect(b).toMatchObject({ status: "inferred", value: { amount: 60, unit: "min", comparator: "up-to" } });
+    if (b.status !== "inferred") return;
+    expect(b.ruleResolution?.alternatives).toEqual([{ value: { amount: 90, unit: "min", comparator: "eq" }, evidence: [{ sourceId: "medela-sonata", quote: "with 1.5 hours of battery life" }] }]);
   });
 
   it("is still a flange-and-bottle electric pump", () => {
@@ -79,8 +87,8 @@ describe("N-05 BabyBuddha 3.0 pumping modes", () => {
     ]);
     expect(modes.reduce((n, m) => n + Number(m[2]), 0)).toBe(30);
     expect(s.value).toMatch(/^4 modes, 30 settings/);
-    expect(s.evidence.map((e) => e.quote)).toContain("Choose from four pumping modes and 30 total settings:");
-    expect(s.evidence.map((e) => e.quote)).toContain("Classic Stimulation with 6 levels");
+    expect(sourceQuotes(s.evidence).map((e) => e.quote)).toContain("Choose from four pumping modes and 30 total settings:");
+    expect(sourceQuotes(s.evidence).map((e) => e.quote)).toContain("Classic Stimulation with 6 levels");
   });
 
   it("keeps the 3.0 page's suction range rather than the 2.0's 320 mmHg ceiling", () => {
@@ -90,13 +98,13 @@ describe("N-05 BabyBuddha 3.0 pumping modes", () => {
 });
 
 describe("grounding reflects the corrections", () => {
-  it("passes Sonata's power list as verified and its runtime only as conflicting candidates", () => {
+  it("passes Sonata's power list as verified and its runtime as rule-settled, never verified", () => {
     const f = getProductFacts("medela-sonata");
     const ps = f.verified.find((x) => x.attribute === "powerSources")!;
     expect([...(ps.value as string[])].sort()).toEqual(["built-in-battery", "mains"]);
-    expect(ps.citations.some((c) => c.url === SONATA_IFU && c.scope === "this-product")).toBe(true);
+    expect(ps.citations.filter(isQuoteCitation).some((c) => c.url === SONATA_IFU && c.scope === "this-product")).toBe(true);
     expect(f.verified.map((x) => x.attribute)).not.toContain("batteryLife");
-    expect(f.conflicting.find((x) => x.attribute === "batteryLife")!.candidates.map((c) => c.value)).toHaveLength(2);
+    expect(f.inferred.find((x) => x.attribute === "batteryLife")!.ruleResolution?.alternatives).toHaveLength(1);
   });
 
   it("passes the Pro+ Traditional weight as a verified manual citation", () => {
