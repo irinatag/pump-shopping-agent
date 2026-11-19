@@ -3,7 +3,9 @@
 
 Reads docs/PUMPPATH_RESEARCH_FINAL.csv and docs/PUMPPATH_CONSUMER_RATINGS.csv (never writes them),
 checks their SHA-256 against docs/PUMPPATH_PACKAGE_MANIFEST.json, takes before-values from the
-actual catalog (docs/CATALOG_EXPORT.json, kept current by lib/products/export.test.ts), and writes:
+hand-written catalog as it stood before this package (docs/research-import/BASELINE_CATALOG.json:
+docs/CATALOG_EXPORT.json at commit 135428c, frozen because the live export now includes this
+package; its SHA-256 is recorded as catalogExportSha256), and writes:
 
   lib/products/data/research-2026-11-12.ts   attribute results + maintainer notes (overlay)
   lib/ratings/consumer-ratings-2026-11-12.ts consumer ratings, every column as supplied
@@ -32,7 +34,7 @@ DOCS = ROOT / "docs"
 RESEARCH_CSV = DOCS / "PUMPPATH_RESEARCH_FINAL.csv"
 RATINGS_CSV = DOCS / "PUMPPATH_CONSUMER_RATINGS.csv"
 MANIFEST = DOCS / "PUMPPATH_PACKAGE_MANIFEST.json"
-CATALOG = DOCS / "CATALOG_EXPORT.json"
+CATALOG = DOCS / "research-import/BASELINE_CATALOG.json"
 OUT_OVERLAY = ROOT / "lib/products/data/research-2026-11-12.ts"
 OUT_RATINGS = ROOT / "lib/ratings/consumer-ratings-2026-11-12.ts"
 OUT_LEDGER = DOCS / "research-import/LEDGER.json"
@@ -721,7 +723,7 @@ def summarize(rows, ledger, entries, notes, ratings, hashes):
         f"- Package: `{PACKAGE}` (baseline `{hashes['baseline']}`)",
         f"- Research CSV SHA-256: `{hashes['research']}` (matches manifest)",
         f"- Consumer CSV SHA-256: `{hashes['ratings']}` (matches manifest)",
-        f"- Before-values: `docs/CATALOG_EXPORT.json` (`{hashes['catalog'][:12]}…`)",
+        f"- Before-values: `docs/research-import/BASELINE_CATALOG.json`, the hand-written catalog before this package (`{hashes['catalog'][:12]}…`)",
         "",
         "## Every research row",
         "",

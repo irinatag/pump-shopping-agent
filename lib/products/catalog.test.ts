@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getProduct, products, sources } from "@/lib/products";
+import { baseProducts, getProduct, products, sources } from "@/lib/products";
 import { ATTRIBUTE_KEYS } from "@/lib/products/build";
 import { classifyProduct } from "@/lib/products/classification";
 import { sourceQuotes } from "@/lib/products/evidence";
@@ -118,15 +118,17 @@ describe("source provenance", () => {
 
   it("establishes every product's mechanism, and its collection configuration except where explicitly unknown", () => {
     for (const p of products) expect(["verified", "inferred"], p.id).toContain(p.mechanism.status);
-    const noCollection = products.filter((p) => p.collection.status === "unknown").map((p) => p.id).sort();
-    expect(noCollection).toEqual(["ameda-pearl", "ameda-platinum", "medela-symphony-plus", "momcozy-m6-mobile-style"]);
-    for (const id of noCollection) expect(products.find((p) => p.id === id)!.collection).toHaveProperty("note");
+    // Since the 2026-11-12 research package every collection is established (Pearl, Platinum and
+    // Symphony PLUS: kit-sold-separately). Hand-written records left unknown must say why.
+    for (const p of products) expect(["verified", "inferred"], p.id).toContain(p.collection.status);
+    for (const p of baseProducts.filter((x) => x.collection.status === "unknown")) expect(p.collection, p.id).toHaveProperty("note");
   });
 });
 
 describe("missing and conflicting attributes", () => {
   it("records conflicts with a note and at least two differing sourced candidates", () => {
-    const conflicts = products.flatMap((p) => attributes(p).filter(([, a]) => a.status === "conflicting").map(([k, a]) => ({ p, k, a })));
+    // The hand-written records carry the conflicts; the research package settles all of them by rule.
+    const conflicts = [...baseProducts, ...products].flatMap((p) => attributes(p).filter(([, a]) => a.status === "conflicting").map(([k, a]) => ({ p, k, a })));
     expect(conflicts.length).toBeGreaterThan(0);
     for (const { p, k, a } of conflicts) {
       if (a.status !== "conflicting") continue;

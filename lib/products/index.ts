@@ -9,9 +9,12 @@ import { motifProducts, motifSources } from "@/lib/products/data/motif";
 import { spectraProducts, spectraSources } from "@/lib/products/data/spectra";
 import { willowProducts, willowSources } from "@/lib/products/data/willow";
 import { zomeeProducts, zomeeSources } from "@/lib/products/data/zomee";
+import { research20261112 } from "@/lib/products/data/research-2026-11-12";
+import { applyResearch, type MaintainerNote } from "@/lib/products/research";
 import type { Product, Source } from "@/lib/products/types";
 
-export const products: Product[] = [
+/** Hand-written catalog records, before any research package is applied. */
+export const baseProducts: Product[] = [
   ...medelaProducts,
   ...spectraProducts,
   ...motifProducts,
@@ -24,6 +27,15 @@ export const products: Product[] = [
   ...evenfloProducts,
   ...eufyProducts,
 ];
+
+/**
+ * The catalog: hand-written records with the 2026-11-12 research package applied. Package values,
+ * inferred ones included, are the working values (docs/DATA.md, working-values policy).
+ */
+export const products: Product[] = applyResearch(baseProducts, research20261112);
+
+/** Research notes for maintainers; kept beside products, never as attribute values. */
+export const maintainerNotes: MaintainerNote[] = research20261112.maintainerNotes;
 
 export const sources: Source[] = [
   ...medelaSources,

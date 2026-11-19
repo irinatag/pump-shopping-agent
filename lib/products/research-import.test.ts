@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { products } from "@/lib/products";
+import { baseProducts, products } from "@/lib/products";
 import { research20261112 as overlay } from "@/lib/products/data/research-2026-11-12";
 import { exportAttribute } from "@/lib/products/export";
 import { applyResearch } from "@/lib/products/research";
@@ -10,8 +10,8 @@ import type { Attribute, DishwasherSafety, Product, Weight } from "@/lib/product
 import { consumerRatings20261112 as ratings } from "@/lib/ratings/consumer-ratings-2026-11-12";
 
 // Dry-run checks for the 2026-11-12 research package (scripts/catalog/import_research.py).
-// The overlay is generated but not yet applied to the catalog; these tests check it against the
-// package and against the current hand-written catalog.
+// The overlay is applied in lib/products/index.ts; these tests check it against the package and
+// against the hand-written catalog it was built on (baseProducts).
 
 const doc = (name: string) => fileURLToPath(new URL(`../../docs/${name}`, import.meta.url));
 const sha256 = (path: string) => createHash("sha256").update(readFileSync(path)).digest("hex");
@@ -58,9 +58,10 @@ describe("research package integrity", () => {
     expect(overlay.maintainerNotes).toHaveLength(byAction["Note for maintainers (not an attribute update)"]);
   });
 
-  it("took its before-values from the actual current catalog", () => {
+  it("took its before-values from the hand-written catalog, frozen in BASELINE_CATALOG.json", () => {
+    expect(sha256(doc("research-import/BASELINE_CATALOG.json"))).toBe(overlay.package.catalogExportSha256);
     for (const r of ledger.rows.filter((x) => "before" in x)) {
-      const p = products.find((x) => x.id === r.productId)!;
+      const p = baseProducts.find((x) => x.id === r.productId)!;
       const key = (entry(r.productId, r.attribute.replace("cleaningRestrictions.", ""))?.attribute ?? r.attribute) as keyof Product;
       expect(r.before, `line ${r.csvLine}`).toEqual(JSON.parse(JSON.stringify(exportAttribute(p[key] as Attribute<unknown>))));
     }
@@ -177,7 +178,7 @@ describe("conversion keeps qualifiers, scope and separations", () => {
   });
 
   it("leaves no legacy rack flag inside dishwasherSafe once applied: rack position lives only in topRackOnly", () => {
-    for (const p of applyResearch(products, overlay)) {
+    for (const p of products) {
       const d = p.dishwasherSafe;
       if (d.status === "verified" || d.status === "inferred") expect(d.value, p.id).not.toHaveProperty("topRackOnly");
     }
@@ -219,12 +220,16 @@ describe("conversion keeps qualifiers, scope and separations", () => {
 });
 
 describe("applying the overlay", () => {
-  it("is idempotent and does not mutate the catalog", () => {
-    const before = JSON.stringify(products);
-    const once = applyResearch(products, overlay);
+  it("is idempotent and does not mutate the hand-written records", () => {
+    const before = JSON.stringify(baseProducts);
+    const once = applyResearch(baseProducts, overlay);
     const twice = applyResearch(once, overlay);
     expect(JSON.stringify(twice)).toBe(JSON.stringify(once));
-    expect(JSON.stringify(products)).toBe(before);
+    expect(JSON.stringify(baseProducts)).toBe(before);
     for (const e of overlay.entries) expect(once.find((p) => p.id === e.productId)![e.attribute]).toEqual(e.result);
+  });
+
+  it("is what the catalog serves", () => {
+    expect(JSON.stringify(products)).toBe(JSON.stringify(applyResearch(baseProducts, overlay)));
   });
 });

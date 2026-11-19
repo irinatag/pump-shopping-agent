@@ -27,32 +27,43 @@ describe("getProductFacts", () => {
     }
   });
 
-  it("surfaces conflicts and unknowns instead of picking a value", () => {
+  it("passes a rule-settled conflict as inferred with the other value, and keeps unknowns unknown", () => {
     const roam = getProductFacts("motif-roam");
-    expect(roam.conflicting.map((c) => c.attribute)).toContain("batteryLife");
+    const life = roam.inferred.find((f) => f.attribute === "batteryLife")!;
+    expect(life.value).toEqual({ amount: 120, unit: "min", comparator: "approximately" });
+    expect(life.ruleResolution?.basis).toBe("weight-of-evidence");
+    expect(life.ruleResolution?.alternatives.map((a) => a.value)).toEqual([{ amount: 90, unit: "min", comparator: "up-to" }]);
     expect(roam.verified.map((v) => v.attribute)).not.toContain("batteryLife");
 
-    const sg = getProductFacts("spectra-synergy-gold");
-    expect(sg.unknown.map((u) => u.attribute)).toContain("weight");
+    const trad = getProductFacts("medela-pump-in-style-pro-plus-traditional");
+    expect(trad.unknown.map((u) => u.attribute)).toContain("batterySessions");
   });
 
-  it("separates inferred facts, with their rationale, from manufacturer-verified facts", () => {
-    const pis = getProductFacts("medela-pump-in-style-pro");
-    const closed = pis.inferred.find((f) => f.attribute === "closedSystem");
+  it("separates inferred facts, with their rationale, from verified facts", () => {
+    const sg = getProductFacts("spectra-synergy-gold");
+    const closed = sg.inferred.find((f) => f.attribute === "closedSystem");
     expect(closed?.value).toBe(true);
-    expect(closed?.rationale).toMatch(/milk barrier/);
-    expect(pis.verified.map((v) => v.attribute)).not.toContain("closedSystem");
+    expect(closed?.rationale.length).toBeGreaterThan(0);
+    expect(sg.verified.map((v) => v.attribute)).not.toContain("closedSystem");
+  });
+
+  it("passes not-applicable attributes with their reason, apart from unknowns", () => {
+    const manual = getProductFacts("ameda-one-hand-manual");
+    expect(manual.notApplicable.find((f) => f.attribute === "batteryLife")?.reason).toBe("manual-pump");
+    expect(manual.unknown.map((u) => u.attribute)).not.toContain("batteryLife");
   });
 
   it("reports the derived classification and flags cross-page citations", () => {
     expect(getProductFacts("medela-pump-in-style-pro").classification).toMatchObject({ status: "derived", category: "flange-bottle-electric" });
-    expect(getProductFacts("momcozy-m6-mobile-style").classification.status).toBe("unclassified");
+    expect(getProductFacts("momcozy-m6-mobile-style").classification.status).toBe("derived");
     const fit = getProductFacts("zomee-fit").verified.find((f) => f.attribute === "closedSystem")!;
     expect(fit.citations.filter(isQuoteCitation).map((c) => c.scope)).toContain("brand-wide");
   });
 
   it("contains no price, coverage, or shipping data", () => {
-    const json = JSON.stringify(products.map((p) => getProductFacts(p.id)), (k, v) => (k === "quote" || k === "note" ? undefined : v));
+    // Free text may mention those words (e.g. "retailer or insurance supplier", "shipping weight"); data fields may not.
+    const text = new Set(["quote", "note", "rationale", "summary", "limitations", "stated", "keyQuote", "statement"]);
+    const json = JSON.stringify(products.map((p) => getProductFacts(p.id)), (k, v) => (text.has(k) ? undefined : v));
     expect(json).not.toMatch(/Cents|shipping|inStock|insurance/);
   });
 });

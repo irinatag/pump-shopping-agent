@@ -1,9 +1,21 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { getProduct } from "@/lib/products";
 import { getSimulatedSupplier, realSuppliers } from "@/lib/suppliers";
 import { coverageOverrides, SIMULATED_SHIPPING_CENTS, simulatedOfferings, simulatedPlans } from "@/lib/offers/simulated/data";
 import { SimulatedQuoteProvider, simulateQuote } from "@/lib/offers/simulated/provider";
 import { SIMULATED_LABEL, type Quote } from "@/lib/offers/types";
+
+// Every catalog product is classified since the 2026-11-12 research package, so the unclassified
+// path is exercised by forcing one product's classification to "unclassified".
+const unclassifiedIds = vi.hoisted(() => new Set<string>());
+vi.mock("@/lib/products/classification", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/products/classification")>();
+  return {
+    ...actual,
+    classifyProduct: (p: Parameters<typeof actual.classifyProduct>[0]) =>
+      unclassifiedIds.has(p.id) ? { status: "unclassified" as const, reason: "Forced in test." } : actual.classifyProduct(p),
+  };
+});
 
 const provider = new SimulatedQuoteProvider();
 
@@ -98,8 +110,10 @@ describe("simulated coverage decisions", () => {
   });
 
   it("returns unverified, with unknown charges, when the product's category is not verified", () => {
+    unclassifiedIds.add("momcozy-m6-mobile-style");
     const m6 = { supplierId: "cradle-supply", productId: "momcozy-m6-mobile-style", listPriceCents: 10000, inStock: true };
     const q = simulateQuote(plan("evergreen-ppo"), getSimulatedSupplier("cradle-supply"), m6, "simulated");
+    unclassifiedIds.clear();
     expect(q.status).toBe("unverified");
     expect(q.reasons).toContain("category-unverified");
     expect(q.charges.totalOutOfPocketCents).toBeNull();

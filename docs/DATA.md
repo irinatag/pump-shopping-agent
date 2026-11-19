@@ -48,9 +48,9 @@ A source quote is `{ sourceId, quote, scope?, section? }` (research and owner-de
 - `scope` — `this-product` (default; the model's own page describes it), `brand-wide` (a manufacturer statement covering all its pumps, e.g. Zomee's "All Zomee breast pumps … have a fully enclosed, anti-backflow system" on the Z2 page), or `other-product` (a statement about this model on another model's page, e.g. "tube-free" for Elvie Pump on the Elvie Stride page). Evidence from any page other than the product's own must carry `brand-wide` or `other-product`. A source of kind `manufacturer-manual` listed in a product's `sourceIds` is that model's own instructions for use (linked from its product page) and counts as its own document.
 - `section` — `product-content` (default), `page-title`, or `page-metadata` (the model's own `<title>` or meta description, e.g. Symphony PLUS "hospital-grade, multi-user").
 
-### Research-package provenance (schema added 2026-11-13; import pending)
+### Research-package provenance (schema added 2026-11-13; applied 2026-11-19)
 
-The research package of 2026-11-12 (`docs/PUMPPATH_RESEARCH_FINAL.csv`, report and manifest beside it) is converted by `scripts/catalog/import_research.py` into an overlay, `lib/products/data/research-2026-11-12.ts`, applied in `lib/products/research.ts` by replacing whole attributes (re-applying changes nothing; removing the overlay restores the hand-written catalog). `docs/research-import/LEDGER.json` records every CSV row with its disposition and the actual catalog before/after; `DRY_RUN.md` summarizes it. The script checks the CSV hashes against the manifest and never writes the CSVs; `--check` fails if any output is stale.
+The research package of 2026-11-12 (`docs/PUMPPATH_RESEARCH_FINAL.csv`, report and manifest beside it) is converted by `scripts/catalog/import_research.py` into an overlay, `lib/products/data/research-2026-11-12.ts`, applied by `applyResearch()` (`lib/products/research.ts`) in `lib/products/index.ts`, which replaces whole attributes: `products` is the applied catalog, `baseProducts` the hand-written records (re-applying changes nothing; removing the overlay restores the hand-written catalog). The script reads its before-values from `docs/research-import/BASELINE_CATALOG.json`, the catalog export frozen before the package was applied, so regenerating `docs/CATALOG_EXPORT.json` never changes the overlay. `docs/research-import/LEDGER.json` records every CSV row with its disposition and the actual catalog before/after; `DRY_RUN.md` summarizes it. The script checks the CSV hashes against the manifest and never writes the CSVs; `--check` fails if any output is stale.
 
 Evidence is a union; every kind stays distinguishable to users and Claude:
 
@@ -92,7 +92,7 @@ Rules, in order:
 
 When several configurations are in the box (Lansinoh Thrive: in-bra cups *and* a bottle kit), the most hands-free one wins. **Portability is not a category input**: a handle, rechargeable battery, clip or "portable" wording never makes a pump a different category. The former traditional/portable split is replaced by the `portability` attribute.
 
-Current results: flange-and-bottle electric 24, wearable 23, hands-free electric 11, manual 11, multi-user 4, unclassified 1 (Momcozy M6 — the page does not say whether it is an in-bra unit or a separate motor). 40 classifications rest on at least one inferred attribute (usually mechanism inferred from power sources) and are flagged `usesInferred`.
+Current results (research package applied, 2026-11-19): flange-and-bottle electric 24, wearable 24, hands-free electric 11, manual 11, multi-user 4, unclassified 0 (Momcozy M6 is `in-bra-wearable` per the package; before it, M6 was the one unclassified product). 39 classifications rest on at least one inferred attribute and are flagged `usesInferred`.
 
 ### Attribute definitions
 
@@ -136,7 +136,9 @@ Current results: flange-and-bottle electric 24, wearable 23, hands-free electric
 
 52 attributes moved from unknown to established (50 verified, 2 inferred) once the extraction process was fixed; 27 were moved from verified to **inferred** because the source does not state them outright (14 power, 10 hands-free, 2 closed-system, 1 unit conversion). Unknowns remain where manufacturers do not publish the value — most often noise, weight, battery runtime in minutes, and dishwasher safety.
 
-### Recorded conflicts (unchanged; awaiting independent resolution)
+### Recorded conflicts in the hand-written records
+
+All of these are settled in the applied catalog: by the owner-approved rule (R1; `inferred` with the other values kept in `ruleResolution`) or by a package row. The applied catalog has no `conflicting` attributes. The hand-written records (`baseProducts`) keep them as listed.
 
 | Product | Attribute | Candidates | Note |
 |---|---|---|---|
@@ -180,7 +182,7 @@ v1 had two rules that hid real specifications and are removed: dropping lines sh
 **Automated, offline (`npm test`)**
 
 - *Integrity* (`lib/products/catalog.test.ts`): ≥50 models; unique ids and brand+model names; variants point to existing base records; every attribute present with a valid status; every verified/inferred value has a non-empty quote; every cited source is declared, used, https, on a manufacturer host, dated; conflicts have ≥2 differing candidates; unknowns carry no value; mechanism established for every product; collection unknown only where noted; **no price / shipping / stock / coverage keys on products**.
-- *Semantics* (`lib/products/semantics.test.ts`): each stored number appears in a quote **with its unit**; the stored comparator matches the qualifier next to the number ("up to", "<", "over", "+", ranges, "about"), and an exact value is rejected if the source qualifies it; hands-free / power / battery / dishwasher / weight-scope values follow the definitions above; inferred values carry a rationale; evidence from another page is flagged `brand-wide` or `other-product`; quotes naming another catalog model are not attributed to this model (one documented comparative exception); variant-specific evidence stays on the variant record; every product except Momcozy M6 classifies; portability never drives classification; `usesInferred` is accurate.
+- *Semantics* (`lib/products/semantics.test.ts`): each stored number appears in a quote **with its unit**; the stored comparator matches the qualifier next to the number ("up to", "<", "over", "+", ranges, "about"), and an exact value is rejected if the source qualifies it; hands-free / power / battery / dishwasher / weight-scope values follow the definitions above; inferred values carry a rationale; evidence from another page is flagged `brand-wide` or `other-product`; quotes naming another catalog model are not attributed to this model (one documented comparative exception); variant-specific evidence stays on the variant record (these wording checks cover the hand-written records, `baseProducts`; research values are accepted as stated and checked by `lib/products/research-import.test.ts`); every product classifies; portability never drives classification; `usesInferred` is accurate.
 - *Commerce separation* (offer, supplier, scenario and grounding tests): unchanged from Milestone 1.5.
 
 **Automated, opt-in (`SOURCE_SNAPSHOTS=<region dir> npx vitest run lib/products/verify-sources.test.ts`)** — requires snapshots from `region.py`:
