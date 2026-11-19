@@ -71,6 +71,23 @@ New value conventions: `Measure.max` (upper end of a stated range); `Weight.scop
 
 Consumer ratings (`lib/ratings/`) are a separate domain: every column of `PUMPPATH_CONSUMER_RATINGS.csv` as supplied. Their dishwasher column duplicates the catalog's label and never overrides it.
 
+### Fact labels (Phase 4, 2026-11-19)
+
+`factLabel()` (`lib/products/labels.ts`) gives every attribute one provenance label; `getProductFacts()` passes it with each fact, and `GROUNDING_RULES` tell Claude how to present each kind. The UI (Milestone 2) is to use the same labels.
+
+| Status | Label kind | Text | When |
+|---|---|---|---|
+| verified | `manufacturer-verified` | Manufacturer statement | manufacturer quotes or manufacturer research rows only |
+| verified | `owner-verified` | Verified by PumpPath, not a manufacturer statement | any owner-verified row or owner decision in the evidence, even beside a manufacturer quote |
+| inferred | `rule-resolved` | Manufacturer sources disagree; PumpPath kept this value by rule | `ruleResolution` present (R1); the other values are passed with it |
+| inferred | `retailer-listed` | Retailer listing, not confirmed by the manufacturer | a retailer-listing research row (weight only) |
+| inferred | `derived` | PumpPath derived this from other catalog facts | derived-from-catalog rows with no manufacturer quote |
+| inferred | `interpreted` | PumpPath interpretation of manufacturer information | any other inferred value |
+| not-applicable | `not-applicable` | "Not applicable (manual pump)", "(plug-in only, no battery)", "(plug-in version, no battery)", "(runs on replaceable batteries)" | by `reason` |
+| conflicting / unknown | `conflicting` / `unknown` | Not verified | |
+
+Grounding also carries **consumer ratings** in their own `consumerRatings` section (noise and cleaning ratings, confidence, mention counts, review status, rating source, caveats, evidence origin), never inside product facts; the ratings file's dishwasher column is left out because `dishwasherSafe` is canonical. Research citations reach Claude as researcher summaries: only a `quote` or `keyQuote` may be quoted word for word, and a `keyQuote` is described as captured during research (not checked against saved pages, D9). Maintainer notes are not passed to Claude.
+
 ### Classification model
 
 Category is never stored. It is **derived** by `classifyProduct()` (`lib/products/classification.ts`) from three evidence-backed attributes, and reports its basis and whether any basis attribute is inferred:
