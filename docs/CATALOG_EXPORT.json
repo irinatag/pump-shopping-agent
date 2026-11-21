@@ -9,11 +9,11 @@
   "sources": 75,
   "attributesPerProduct": 25,
   "attributeStatus": {
-   "verified": 885,
-   "inferred": 206,
+   "verified": 887,
+   "inferred": 205,
    "conflicting": 0,
    "not-applicable": 48,
-   "unknown": 711
+   "unknown": 710
   },
   "conflicts": 0
  },
@@ -11779,7 +11779,7 @@
         "value": {
          "amount": 240,
          "unit": "min",
-         "comparator": "up-to"
+         "comparator": "at-least"
         },
         "evidence": [
          {
@@ -20301,10 +20301,37 @@
      ]
     },
     "closedSystem": {
-     "status": "inferred",
+     "status": "verified",
      "value": true,
-     "rationale": "States the design prevents milk backflow; does not say closed system.",
      "evidence": [
+      {
+       "kind": "owner-decision",
+       "decidedOn": "2026-11-19",
+       "statement": "Momcozy V2 Pro is a closed system, like the V1 Pro: the V2 Pro page carries the same backflow statement, and the Momcozy comparison copy says both pumps use the closed design.",
+       "supersedes": {
+        "package": "pumppath-research-2026-11-12",
+        "csvLine": 514,
+        "stated": ""
+       }
+      },
+      {
+       "kind": "research",
+       "evidenceClass": "manufacturer",
+       "package": "pumppath-research-2026-11-12",
+       "csvLine": 494,
+       "stated": "true (verified, no longer inferred)",
+       "summary": "Text on the product page says the pump uses a closed system with a protective barrier so milk never contacts the motor or tubing.",
+       "keyQuote": "Improves sealing performance and and prevents milk backflow",
+       "quoteStatus": "Existing catalog evidence quote",
+       "links": [
+        {
+         "url": "https://momcozy.com/products/v1-pro-hospital-grade-wearable-breast-pump",
+         "site": "manufacturer"
+        }
+       ],
+       "confidence": "High",
+       "limitations": "The sentence sits in comparison copy on the page (\"both utilize\")."
+      },
       {
        "kind": "source-quote",
        "sourceId": "momcozy-v2-pro",
@@ -20312,8 +20339,7 @@
        "scope": "this-product",
        "section": "product-content"
       }
-     ],
-     "ruleResolution": null
+     ]
     },
     "dishwasherSafe": {
      "status": "verified",
@@ -30203,8 +30229,36 @@
      ]
     },
     "multiUser": {
-     "status": "unknown",
-     "note": null
+     "status": "verified",
+     "value": false,
+     "evidence": [
+      {
+       "kind": "owner-decision",
+       "decidedOn": "2026-11-19",
+       "statement": "Evenflo Deluxe Advanced Double Electric is the Advanced Double Electric pump sold with a bag and cooler, so it is single-user, as the Advanced Double Electric instructions for use state.",
+       "supersedes": {
+        "package": "pumppath-research-2026-11-12",
+        "csvLine": 184,
+        "stated": ""
+       }
+      },
+      {
+       "kind": "research",
+       "evidenceClass": "manufacturer",
+       "package": "pumppath-research-2026-11-12",
+       "csvLine": 139,
+       "stated": "false (single-user)",
+       "summary": "Advanced Double Electric instructions for use say the pump is intended for a single user.",
+       "quoteStatus": "No verbatim quote captured; paraphrased in evidenceSummary",
+       "links": [
+        {
+         "url": "https://cdn.shopify.com/s/files/1/0576/6719/0963/files/2951-450_Adv_DoubleElectric_IFU_13JUN2019.pdf?v=1738707104",
+         "site": "file-host"
+        }
+       ],
+       "confidence": "High"
+      }
+     ]
     },
     "pumping": {
      "status": "verified",

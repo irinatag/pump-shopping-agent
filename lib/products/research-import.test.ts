@@ -26,7 +26,7 @@ const ACTION_DISPOSITIONS: Record<string, string[]> = {
   "Add new attribute": ["add"],
   "Confirm (no value change)": ["confirm"],
   "Out of scope (owner decision)": ["unchanged-out-of-scope"],
-  "Catalog value kept, not re-checked (owner decision)": ["unchanged-retained"],
+  "Catalog value kept, not re-checked (owner decision)": ["unchanged-retained", "owner-decision"],
   "Update (conflict resolved by owner rule; both values kept in limitations)": ["rule-resolved"],
   "Note for maintainers (not an attribute update)": ["maintainer-note"],
 };
@@ -216,6 +216,27 @@ describe("conversion keeps qualifiers, scope and separations", () => {
       const keys = a.evidence.map((x) => JSON.stringify(x));
       expect(new Set(keys).size, `${e.productId}.${e.attribute}`).toBe(keys.length);
     }
+  });
+});
+
+describe("consistency fixes after the 2026-11-19 trust audit", () => {
+  it("verifies Momcozy V2 Pro as a closed system, like the V1 Pro, by owner decision with its own quote kept", () => {
+    const v2 = result<boolean>("momcozy-v2-pro", "closedSystem");
+    expect(v2).toMatchObject({ status: "verified", value: true });
+    if (v2?.status !== "verified") return;
+    expect(v2.evidence.map((e) => e.kind ?? "source-quote")).toEqual(["owner-decision", "research", "source-quote"]);
+    expect(result<boolean>("momcozy-v1-pro", "closedSystem")).toMatchObject({ status: "verified", value: true });
+  });
+
+  it("makes Evenflo Deluxe Advanced Double single-user, matching the Advanced Double it is sold as", () => {
+    expect(result<boolean>("evenflo-deluxe-advanced-double-electric", "multiUser")).toMatchObject({ status: "verified", value: false });
+    expect(result<boolean>("evenflo-advanced-double-electric", "multiUser")).toMatchObject({ status: "verified", value: false });
+  });
+
+  it("stores Luna with Battery's other runtime, 4+ hours, as a lower bound", () => {
+    const b = result<unknown>("motif-luna-with-battery", "batteryLife");
+    if (b?.status !== "inferred") throw new Error("expected inferred");
+    expect(b.ruleResolution?.alternatives.map((a) => a.value)).toEqual([{ amount: 240, unit: "min", comparator: "at-least" }]);
   });
 });
 

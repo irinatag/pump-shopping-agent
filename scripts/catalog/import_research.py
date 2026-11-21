@@ -52,6 +52,23 @@ OWNER_DECISIONS = {
         # Row whose wording supports the decision (Willow Wave collection: "...; not hands-free").
         "supportingRow": ("willow-wave", "collection"),
     },
+    # Consistency fixes approved 2026-11-19 after the trust audit (A-01, N-09). Each supersedes a
+    # "Catalog value kept, not re-checked" row.
+    ("momcozy-v2-pro", "closedSystem"): {
+        "decidedOn": "2026-11-19",
+        "statement": "Momcozy V2 Pro is a closed system, like the V1 Pro: the V2 Pro page carries the same "
+        "backflow statement, and the Momcozy comparison copy says both pumps use the closed design.",
+        "value": True,
+        "supportingRow": ("momcozy-v1-pro", "closedSystem"),
+        "keepCatalogEvidence": True,
+    },
+    ("evenflo-deluxe-advanced-double-electric", "multiUser"): {
+        "decidedOn": "2026-11-19",
+        "statement": "Evenflo Deluxe Advanced Double Electric is the Advanced Double Electric pump sold with a bag "
+        "and cooler, so it is single-user, as the Advanced Double Electric instructions for use state.",
+        "value": False,
+        "supportingRow": ("evenflo-advanced-double-electric", "multiUser"),
+    },
 }
 
 # ---- column vocabularies -------------------------------------------------------------------
@@ -282,7 +299,8 @@ RULE_RESOLVED = {
     ("motif-luna-with-battery", "batteryLife"): {
         "stated": "Over 2 hours (lower bound); note newer page copy says 4+ hours",
         "selected": (m(120, "min", "at-least"), ["catalog:0", "row"]),
-        "alternatives": [(m(240, "min", "up-to"), ["catalog:1"])],
+        # "up to 4+ hours": the "+" makes 4 hours a lower bound (trust audit N-08).
+        "alternatives": [(m(240, "min", "at-least"), ["catalog:1"])],
     },
     ("motif-roam", "batteryLife"): {
         "stated": "Approximately 120 minutes; note the description says up to 90",
@@ -566,7 +584,7 @@ def build(rows, catalog):
         rec = {"csvLine": line, "productId": pid, "attribute": r["attribute"], "action": r["action"],
                "proposedStatus": r["proposedStatus"], "evidenceClass": r["evidenceClass"]}
 
-        if action in ("unchanged-out-of-scope", "unchanged-retained"):
+        if action in ("unchanged-out-of-scope", "unchanged-retained") and (pid, ATTRIBUTE.get(r["attribute"], r["attribute"])) not in OWNER_DECISIONS:
             rec["disposition"] = action
             if attr in products[pid]["attributes"]:
                 rec["before"] = products[pid]["attributes"][attr]
@@ -580,7 +598,8 @@ def build(rows, catalog):
             continue
 
         before = products[pid]["attributes"][attr]
-        rev = research_evidence(r, line)
+        # An owner decision cites the decision and its supporting row, not the superseded row.
+        rev = None if (pid, attr) in OWNER_DECISIONS else research_evidence(r, line)
         status = r["proposedStatus"]
 
         if (pid, attr) in OWNER_DECISIONS:
@@ -590,6 +609,7 @@ def build(rows, catalog):
                 {"kind": "owner-decision", "decidedOn": d["decidedOn"], "statement": d["statement"],
                  "supersedes": {"package": PACKAGE, "csvLine": line, "stated": r["proposedValue"]}},
                 research_evidence(srow, sline),
+                *(catalog_evidence(before) if d.get("keepCatalogEvidence") else []),
             ]}
             change = "owner-decision"
         elif action == "rule-resolved":

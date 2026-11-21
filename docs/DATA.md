@@ -245,7 +245,7 @@ interface QuoteProvider {
 
 Every `Quote` carries `provenance` — `{ kind: "simulated", label }` or `{ kind: "supplier-api", supplierId, retrievedAt, reference }` — and `charges` (`pumpOutOfPocketCents`, `shippingCents`, `otherMandatoryCents`, `totalOutOfPocketCents`), each **`null` when the provider did not supply it**.
 
-The simulated provider covers a product only through its **derived** classification: plans list covered categories (`flange-bottle-electric`, `hands-free-electric`, `wearable`, `manual`; none cover `multi-user`), and an unclassified product gets an `unverified` quote (`category-unverified`). The remediation renamed categories but left every simulated quote, status, charge, and scenario result identical (191/191 entries compared).
+The simulated provider covers a product only through its **derived** classification: plans list covered categories (`flange-bottle-electric`, `hands-free-electric`, `wearable`, `manual`; none cover `multi-user`), and an unclassified product gets an `unverified` quote (`category-unverified`). The remediation renamed categories but left every simulated quote, status, charge, and scenario result identical. The provider returns 188 simulated quotes (4 plans × 47 offerings); an earlier version of this note said 191, which was a miscount (trust audit N-14).
 
 ### Free-pump rule
 

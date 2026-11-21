@@ -3464,6 +3464,44 @@ export const research20261112: ResearchOverlay = {
    }
   },
   {
+   "productId": "evenflo-deluxe-advanced-double-electric",
+   "attribute": "multiUser",
+   "csvLine": 184,
+   "change": "owner-decision",
+   "result": {
+    "status": "verified",
+    "value": false,
+    "evidence": [
+     {
+      "kind": "owner-decision",
+      "decidedOn": "2026-11-19",
+      "statement": "Evenflo Deluxe Advanced Double Electric is the Advanced Double Electric pump sold with a bag and cooler, so it is single-user, as the Advanced Double Electric instructions for use state.",
+      "supersedes": {
+       "package": "pumppath-research-2026-11-12",
+       "csvLine": 184,
+       "stated": ""
+      }
+     },
+     {
+      "kind": "research",
+      "evidenceClass": "manufacturer",
+      "package": "pumppath-research-2026-11-12",
+      "csvLine": 139,
+      "stated": "false (single-user)",
+      "summary": "Advanced Double Electric instructions for use say the pump is intended for a single user.",
+      "quoteStatus": "No verbatim quote captured; paraphrased in evidenceSummary",
+      "links": [
+       {
+        "url": "https://cdn.shopify.com/s/files/1/0576/6719/0963/files/2951-450_Adv_DoubleElectric_IFU_13JUN2019.pdf?v=1738707104",
+        "site": "file-host"
+       }
+      ],
+      "confidence": "High"
+     }
+    ]
+   }
+  },
+  {
    "productId": "evenflo-pocket-double-electric",
    "attribute": "batterySessions",
    "csvLine": 185,
@@ -10507,6 +10545,50 @@ export const research20261112: ResearchOverlay = {
    }
   },
   {
+   "productId": "momcozy-v2-pro",
+   "attribute": "closedSystem",
+   "csvLine": 514,
+   "change": "owner-decision",
+   "result": {
+    "status": "verified",
+    "value": true,
+    "evidence": [
+     {
+      "kind": "owner-decision",
+      "decidedOn": "2026-11-19",
+      "statement": "Momcozy V2 Pro is a closed system, like the V1 Pro: the V2 Pro page carries the same backflow statement, and the Momcozy comparison copy says both pumps use the closed design.",
+      "supersedes": {
+       "package": "pumppath-research-2026-11-12",
+       "csvLine": 514,
+       "stated": ""
+      }
+     },
+     {
+      "kind": "research",
+      "evidenceClass": "manufacturer",
+      "package": "pumppath-research-2026-11-12",
+      "csvLine": 494,
+      "stated": "true (verified, no longer inferred)",
+      "summary": "Text on the product page says the pump uses a closed system with a protective barrier so milk never contacts the motor or tubing.",
+      "keyQuote": "Improves sealing performance and and prevents milk backflow",
+      "quoteStatus": "Existing catalog evidence quote",
+      "links": [
+       {
+        "url": "https://momcozy.com/products/v1-pro-hospital-grade-wearable-breast-pump",
+        "site": "manufacturer"
+       }
+      ],
+      "confidence": "High",
+      "limitations": "The sentence sits in comparison copy on the page (\"both utilize\")."
+     },
+     {
+      "sourceId": "momcozy-v2-pro",
+      "quote": "Improves sealing performance and and prevents milk backflow"
+     }
+    ]
+   }
+  },
+  {
    "productId": "momcozy-v3",
    "attribute": "batteryLife",
    "csvLine": 516,
@@ -11642,7 +11724,7 @@ export const research20261112: ResearchOverlay = {
        "value": {
         "amount": 240,
         "unit": "min",
-        "comparator": "up-to"
+        "comparator": "at-least"
        },
        "evidence": [
         {
