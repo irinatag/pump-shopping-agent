@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildGroundingContext, getProductFacts, GROUNDING_RULES, isQuoteCitation } from "@/lib/grounding";
+import { buildGroundingContext, getConsumerRatingFacts, getProductFacts, GROUNDING_RULES, isQuoteCitation } from "@/lib/grounding";
 import { getProduct, products, sources } from "@/lib/products";
 import { ATTRIBUTE_KEYS } from "@/lib/products/build";
 import { SimulatedQuoteProvider } from "@/lib/offers/simulated/provider";
@@ -88,5 +88,41 @@ describe("buildGroundingContext", () => {
 
   it("includes no offers when none are supplied", () => {
     expect(buildGroundingContext({ productIds: ["willow-go"] }).offers).toEqual([]);
+  });
+
+  it("passes consumer ratings in their own section, with confidence and caveats and without the dishwasher column", () => {
+    const ctx = buildGroundingContext({ productIds: ["medela-pump-in-style-pro", "willow-go"] });
+    expect(ctx.consumerRatings.map((r) => r.productId)).toEqual(["medela-pump-in-style-pro", "willow-go"]);
+    for (const r of ctx.consumerRatings) {
+      expect(r).toMatchObject({ package: "pumppath-research-2026-11-12" });
+      expect(r.noiseConfidence).toBeTruthy();
+      expect(r.cleaningConfidence).toBeTruthy();
+      expect(r).toHaveProperty("reviewSetCaveats");
+      expect(r).not.toHaveProperty("dishwasherSafety_manufacturerFact");
+    }
+    for (const p of ctx.products) expect(JSON.stringify(p)).not.toMatch(/noiseRating|cleaningRating/);
+    expect(getConsumerRatingFacts("no-such-product")).toBeNull();
+  });
+});
+
+describe("fact labels in grounding", () => {
+  it("labels every fact Claude receives", () => {
+    for (const p of products) {
+      const f = getProductFacts(p.id);
+      for (const x of [...f.verified, ...f.inferred, ...f.conflicting, ...f.notApplicable, ...f.unknown]) expect(x.label.text.length, `${p.id}.${x.attribute}`).toBeGreaterThan(0);
+    }
+  });
+
+  it("tells Claude owner-verified facts are not manufacturer statements, and how to present each label", () => {
+    const power = getProductFacts("ameda-mya-joy-plus").verified.find((x) => x.attribute === "powerSources")!;
+    expect(power.label.kind).toBe("owner-verified");
+    expect(power.citations.some((c) => !isQuoteCitation(c) && c.kind === "research" && c.evidenceClass === "owner-verified")).toBe(true);
+    const rules = GROUNDING_RULES.join("\n");
+    for (const term of ["owner-verified", "rule-resolved", "retailer-listed", "not applicable", "keyQuote", "Consumer ratings"]) expect(rules).toContain(term);
+  });
+
+  it("labels rule-settled and not-applicable facts", () => {
+    expect(getProductFacts("medela-sonata").inferred.find((x) => x.attribute === "batteryLife")!.label.kind).toBe("rule-resolved");
+    expect(getProductFacts("ameda-mya-joy").notApplicable.find((x) => x.attribute === "batteryLife")!.label.text).toBe("Not applicable (runs on replaceable batteries)");
   });
 });
